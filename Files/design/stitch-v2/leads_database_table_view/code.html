@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cerebyl - Leads Database</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#191c1e",
+                        "tertiary-container": "#6f757c",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "primary": "#005cad",
+                        "primary-fixed": "#d5e3ff",
+                        "on-primary-fixed-variant": "#004788",
+                        "on-primary-container": "#fefcff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary": "#565d63",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#626567",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "on-primary-fixed": "#001b3b",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-secondary-fixed-variant": "#444749",
+                        "on-background": "#0b1c30",
+                        "outline-variant": "#c0c6d5",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#dde3eb",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#414753",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "secondary-container": "#e0e3e5",
+                        "primary-container": "#0074d9",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#41474e",
+                        "secondary": "#5c5f61",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "surface-tint": "#005eb2",
+                        "inverse-primary": "#a7c8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#fcfcff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#161c22",
+                        "outline": "#717785",
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "32px",
+                        "section-gap": "64px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        .skeuomorphic-input {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .glass-btn {
+            background: linear-gradient(180deg, #0074d9 0%, #005cad 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 6px rgba(0, 92, 173, 0.2);
+        }
+        .glass-btn:hover {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 15px rgba(0, 92, 173, 0.3);
+        }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant py-gutter justify-between">
+<div>
+<div class="px-8 mb-8">
+<h1 class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed">Cerebyl</h1>
+<p class="text-secondary text-sm mt-1">Pharma CRM</p>
+</div>
+<button class="mx-6 mb-8 w-[calc(100%-48px)] glass-btn text-on-primary rounded-full py-3 px-4 font-label-md flex justify-center items-center gap-2 transition-all duration-300 group">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                New Lead
+            </button>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-surface dark:bg-surface-bright text-primary font-semibold rounded-l-full ml-4 pl-4 py-3 shadow-sm group" href="#">
+<span class="material-symbols-outlined text-[24px] font-variation-settings: 'FILL' 1;">person_search</span>
+<span class="font-body-md text-body-md">Leads</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">medical_services</span>
+<span class="font-body-md text-body-md">Physicians</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">map</span>
+<span class="font-body-md text-body-md">Territories</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">insights</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">description</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+</li>
+</ul>
+</div>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 ml-0 md:ml-64 relative h-screen overflow-y-auto bg-[#f0f4fb]">
+<!-- TopNavBar Mobile (simplified representation for structure) -->
+<header class="md:hidden w-full sticky top-0 z-50 bg-surface dark:bg-surface-dim flex justify-between items-center px-4 h-16 shadow-sm">
+<h1 class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed-dim">Cerebyl</h1>
+<span class="material-symbols-outlined text-secondary">menu</span>
+</header>
+<div class="px-4 md:px-8 py-8 md:py-10 max-w-[1600px] mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-2">Leads Database</h2>
+<p class="font-body-md text-body-md text-secondary">Manage and track 2,451 active pharmaceutical leads.</p>
+</div>
+</div>
+<!-- Filter & Search Bar -->
+<div class="glass-panel rounded-xl p-4 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between z-10 relative">
+<div class="flex-1 w-full flex flex-wrap gap-4">
+<!-- Search -->
+<div class="relative flex-1 min-w-[250px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiary">search</span>
+<input class="skeuomorphic-input w-full pl-10 pr-4 py-2.5 rounded-lg text-on-surface font-body-md outline-none focus:ring-2 focus:ring-primary/50 transition-shadow" placeholder="Search leads by name, firm, or code..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="flex gap-3 flex-wrap">
+<button class="skeuomorphic-input px-4 py-2.5 rounded-lg flex items-center gap-2 text-on-surface hover:bg-surface-container transition-colors">
+<span class="font-label-md text-label-md">Region</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">keyboard_arrow_down</span>
+</button>
+<button class="skeuomorphic-input px-4 py-2.5 rounded-lg flex items-center gap-2 text-on-surface hover:bg-surface-container transition-colors">
+<span class="font-label-md text-label-md">Specialty</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">keyboard_arrow_down</span>
+</button>
+<button class="skeuomorphic-input px-4 py-2.5 rounded-lg flex items-center gap-2 text-on-surface hover:bg-surface-container transition-colors">
+<span class="font-label-md text-label-md">Assigned To</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="glass-btn text-on-primary rounded-lg py-2.5 px-4 font-label-md flex justify-center items-center gap-2 transition-all flex-1 md:flex-none">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        More Filters
+                    </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="glass-panel rounded-xl overflow-hidden shadow-sm relative z-0">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead>
+<tr class="border-b border-outline-variant/30 bg-surface/50 text-secondary font-label-md text-label-md">
+<th class="py-4 px-6 w-[50px] text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary bg-transparent w-4 h-4 cursor-pointer" id="selectAll" type="checkbox"/>
+</th>
+<th class="py-4 px-4 whitespace-nowrap">Lead Code</th>
+<th class="py-4 px-4 whitespace-nowrap">Contact Person</th>
+<th class="py-4 px-4 whitespace-nowrap">Firm Name</th>
+<th class="py-4 px-4 whitespace-nowrap">Phone</th>
+<th class="py-4 px-4 whitespace-nowrap">City</th>
+<th class="py-4 px-4 whitespace-nowrap">Stage</th>
+<th class="py-4 px-4 whitespace-nowrap">Temp.</th>
+<th class="py-4 px-6 whitespace-nowrap">Assigned Rep</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-body-md text-body-md">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group cursor-pointer">
+<td class="py-3 px-6 text-center">
+<input class="row-checkbox rounded border-outline-variant text-primary focus:ring-primary bg-transparent w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3 px-4 tabular-nums text-tertiary">#LD-8902</td>
+<td class="py-3 px-4 font-medium text-on-surface">Dr. Sarah Jenkins</td>
+<td class="py-3 px-4">Apex Medical Group</td>
+<td class="py-3 px-4 tabular-nums text-secondary">(555) 019-8234</td>
+<td class="py-3 px-4 text-secondary">Seattle, WA</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-container/10 text-primary-container border border-primary-container/20">Evaluation</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-error" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-sm font-medium">Hot</span>
+</div>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-primary">MR</div>
+<span>Mark R.</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group cursor-pointer bg-surface-container-highest/20">
+<td class="py-3 px-6 text-center">
+<input checked="" class="row-checkbox rounded border-outline-variant text-primary focus:ring-primary bg-transparent w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3 px-4 tabular-nums text-tertiary">#LD-8901</td>
+<td class="py-3 px-4 font-medium text-on-surface">Dr. James Chen</td>
+<td class="py-3 px-4">Pacific Oncology Center</td>
+<td class="py-3 px-4 tabular-nums text-secondary">(555) 012-4921</td>
+<td class="py-3 px-4 text-secondary">Portland, OR</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-variant text-on-surface-variant border border-outline-variant/50">Initial Contact</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">ac_unit</span>
+<span class="text-sm font-medium">Cold</span>
+</div>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-primary">AL</div>
+<span>Anna L.</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group cursor-pointer">
+<td class="py-3 px-6 text-center">
+<input class="row-checkbox rounded border-outline-variant text-primary focus:ring-primary bg-transparent w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-3 px-4 tabular-nums text-tertiary">#LD-8900</td>
+<td class="py-3 px-4 font-medium text-on-surface">Dr. Elena Rodriguez</td>
+<td class="py-3 px-4">Valley Cardiology</td>
+<td class="py-3 px-4 tabular-nums text-secondary">(555) 018-7743</td>
+<td class="py-3 px-4 text-secondary">Phoenix, AZ</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">Proposal</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-[#f59e0b]" style="font-variation-settings: 'FILL' 1;">thermostat</span>
+<span class="text-sm font-medium">Warm</span>
+</div>
+</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-primary">MR</div>
+<span>Mark R.</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="border-t border-outline-variant/30 px-6 py-4 flex items-center justify-between bg-surface/30">
+<p class="text-sm text-secondary">Showing <span class="font-medium text-on-surface tabular-nums">1</span> to <span class="font-medium text-on-surface tabular-nums">3</span> of <span class="font-medium text-on-surface tabular-nums">2,451</span> leads</p>
+<div class="flex gap-2">
+<button class="p-1.5 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface disabled:opacity-50 transition-colors" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="p-1.5 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Selection Bar (Simulated Active State) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 glass-panel rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl z-50 transition-transform duration-300 transform translate-y-0 opacity-100" id="selectionBar">
+<div class="flex items-center gap-2 border-r border-outline-variant/50 pr-6">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-label-md text-label-md text-on-surface"><span class="tabular-nums font-bold">1</span> Selected</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-sm font-medium text-secondary hover:text-on-surface flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                </button>
+<button class="text-sm font-medium text-secondary hover:text-on-surface flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span> Export Excel/CSV
+                </button>
+<button class="text-sm font-medium text-error hover:bg-error-container/50 flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ml-2">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<button class="absolute -top-2 -right-2 bg-surface text-secondary hover:text-on-surface rounded-full p-1 shadow-md border border-outline-variant/20" onclick="document.getElementById('selectionBar').classList.add('translate-y-24', 'opacity-0')">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</main>
+<script>
+        // Simple logic to show/hide selection bar based on checkboxes
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        const selectAll = document.getElementById('selectAll');
+        const selectionBar = document.getElementById('selectionBar');
+
+        function updateSelectionBar() {
+            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+            if(checkedCount > 0) {
+                selectionBar.classList.remove('translate-y-24', 'opacity-0');
+            } else {
+                selectionBar.classList.add('translate-y-24', 'opacity-0');
+            }
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateSelectionBar);
+        });
+
+        selectAll.addEventListener('change', (e) => {
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+            updateSelectionBar();
+        });
+    </script>
+</body></html>

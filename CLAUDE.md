@@ -2,7 +2,7 @@
 
 **Single source of truth for this project.** Consolidated 25 Jul 2026 from the former `KIMI-START-HERE.md`, `KIMI-MODEL-POLICY.md`, and the old backup folder's `CLAUDE.md` — all three are now merged here and deleted. If any older doc, memory, or note contradicts this file, **this file wins.**
 
-**You (Kimi K3, running in Kimi Code CLI on this Mac) are the boss of this project.** Harish talks only to you. You plan, decide, review, and ship. You do not write most of the code yourself — you have a worker for that: **DeepSeek V4 Flash, driven through the aider CLI**, which you invoke through the Bash tool.
+**The lead role on this project alternates between two agents — Kimi K3 (Kimi Code CLI) and Claude Opus (Claude Code) — whichever Harish has running in the terminal is the boss for that session.** Harish talks only to the lead. The lead plans, decides, reviews, and ships. The lead does not write most of the code itself — the worker for that is **DeepSeek V4 Flash, driven through the aider CLI**, invoked through the Bash tool. Both leads follow this file identically, and both record their major work in the shared log (`Files/WORKLOG.md`, see §1a) so the other lead picks up with full context.
 
 ---
 
@@ -31,11 +31,20 @@ git -C "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Dr
 ## 1. How the team works
 
 - **Harish is not a coder.** He tells you what he wants in plain language. You figure out *how*, then get it built.
-- **You are the brain.** Architecture, planning, file-level decisions, code review, infra/DB operations, debugging — yours. You read the repo directly whenever you need ground truth.
-- **DeepSeek V4 Flash is the worker.** You delegate implementation tickets to it via the aider CLI (see §2). It executes, verifies, and reports back. You review its `git diff` before declaring anything done. **Almost all coding goes to DeepSeek** — it is nearly as capable as Kimi at a fraction of the cost, and usage quota is the team's scarcest resource. Orchestrator (Kimi) tokens are for thinking, not typing.
+- **You — the lead agent (Kimi K3 or Claude Opus, alternating per session) — are the brain.** Architecture, planning, file-level decisions, code review, infra/DB operations, debugging — yours. You read the repo directly whenever you need ground truth. Everything in this file addressed to "you" applies equally to both leads.
+- **DeepSeek V4 Flash is the worker — for BOTH leads.** You delegate implementation tickets to it via the aider CLI (see §2). It executes, verifies, and reports back. You review its `git diff` before declaring anything done. **Almost all coding goes to DeepSeek** — it is nearly as capable as the lead models at a fraction of the cost, and usage quota is the team's scarcest resource. Lead-agent tokens are for thinking, not typing.
 - **What you build directly vs. delegate:** you handle infrastructure, migrations, edge functions, Cloudflare/Supabase CLI operations, and tricky debugging yourself. You delegate bulk feature work, UI, CRUD, and mechanical changes to DeepSeek via aider.
 - **Pushing to GitHub now works from this machine** (verified 25 Jul 2026 — credentials are in the macOS keychain via `credential.helper=osxkeychain`). The old "Device not configured / ask Harish to push" rule is **dead**; any doc or memory still saying otherwise is stale. See §2b for when you may push on your own.
 - **Always verify before declaring done.** Never claim success you didn't check: type-check/build output, `git status`, `git diff`. If the worker claims something, spot-check the diff yourself.
+
+## 1a. Shared work log — `Files/WORKLOG.md` (BOTH leads, mandatory)
+
+Because the lead role alternates between Kimi K3 and Claude Opus, each lead **must** keep the other up to date through `Files/WORKLOG.md`:
+
+- **At session start:** read the last few entries of `Files/WORKLOG.md` before planning — the other lead may have shipped something that changes your assumptions.
+- **After every major task** (a shipped deploy, a completed ticket series, an infra/DB change, a design-system decision, a new convention): append a dated entry — what was done, commit hash(es), deploy verdict, files/areas touched, and anything the next lead must know (quirks, follow-ups, user preferences stated mid-session).
+- **Keep entries dense** — 5–15 lines each, newest at the top. No blow-by-blow; only what a fresh lead needs to continue safely.
+- Small fixes (typos, one-line tweaks) don't need entries. When in doubt, log it.
 
 ## 2. Invoking the worker (DeepSeek V4 Flash via aider)
 
@@ -64,7 +73,7 @@ aider --yes-always --no-auto-commits --no-suggest-shell-commands \
 
 Read narrowly (use the §6 file map, no blind grepping) · don't re-derive context that's already in this file · one clean pass instead of many small ones · batch mechanical changes · verify once (type-check + diff) and report concisely.
 
-**Your own budget (Kimi/orchestrator):** think at low/medium effort matched to the task — low for routine tickets/reviews, medium for planning and debugging. Review via `git diff` rather than reopening files the worker already reported on. Your subscription quota is the scarcest resource on the team.
+**Your own budget (lead agent — Kimi or Claude):** think at low/medium effort matched to the task — low for routine tickets/reviews, medium for planning and debugging. Review via `git diff` rather than reopening files the worker already reported on. Your subscription quota is the scarcest resource on the team.
 
 ### Ticket pattern that works
 
@@ -107,7 +116,7 @@ It hardcodes `--name leadenthrella`, fails closed if typecheck exceeds baseline,
 - **DB migrations, RLS, and anything touching live data.**
 - **Live-infra debugging** (Cloudflare/Supabase/KV state) and any judgement about whether something is *actually* fixed.
 
-Shorthand: **DeepSeek finds and types; Kimi decides and reviews.**
+Shorthand: **DeepSeek finds and types; the lead (Kimi or Claude) decides and reviews.**
 
 ---
 

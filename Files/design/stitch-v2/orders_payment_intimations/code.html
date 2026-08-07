@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cerebyl - Payment Intimations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "secondary-container": "#e0e3e5",
+                            "error-container": "#ffdad6",
+                            "surface-container-high": "#dce9ff",
+                            "on-primary": "#ffffff",
+                            "on-error-container": "#93000a",
+                            "outline": "#717785",
+                            "primary-fixed-dim": "#a7c8ff",
+                            "on-surface": "#0b1c30",
+                            "on-secondary": "#ffffff",
+                            "on-tertiary-fixed": "#161c22",
+                            "surface-dim": "#cbdbf5",
+                            "on-error": "#ffffff",
+                            "primary-fixed": "#d5e3ff",
+                            "primary": "#005cad",
+                            "on-background": "#0b1c30",
+                            "surface-container-lowest": "#ffffff",
+                            "on-tertiary-container": "#fcfcff",
+                            "on-secondary-container": "#626567",
+                            "surface-container-highest": "#d3e4fe",
+                            "surface-bright": "#f8f9ff",
+                            "on-tertiary": "#ffffff",
+                            "inverse-surface": "#213145",
+                            "outline-variant": "#c0c6d5",
+                            "error": "#ba1a1a",
+                            "tertiary": "#565d63",
+                            "on-surface-variant": "#414753",
+                            "surface-container": "#e5eeff",
+                            "tertiary-container": "#6f757c",
+                            "surface": "#f8f9ff",
+                            "inverse-on-surface": "#eaf1ff",
+                            "tertiary-fixed-dim": "#c1c7cf",
+                            "surface-container-low": "#eff4ff",
+                            "on-secondary-fixed": "#191c1e",
+                            "on-primary-container": "#fefcff",
+                            "on-primary-fixed-variant": "#004788",
+                            "surface-tint": "#005eb2",
+                            "on-secondary-fixed-variant": "#444749",
+                            "secondary-fixed": "#e0e3e5",
+                            "tertiary-fixed": "#dde3eb",
+                            "surface-variant": "#d3e4fe",
+                            "secondary": "#5c5f61",
+                            "inverse-primary": "#a7c8ff",
+                            "on-primary-fixed": "#001b3b",
+                            "background": "#f8f9ff",
+                            "secondary-fixed-dim": "#c4c7c9",
+                            "primary-container": "#0074d9",
+                            "on-tertiary-fixed-variant": "#41474e"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-md": "24px",
+                            "gutter": "24px",
+                            "stack-sm": "12px",
+                            "card-padding": "32px",
+                            "section-gap": "64px"
+                    },
+                    "fontFamily": {
+                            "headline-md": ["Inter"],
+                            "headline-lg-mobile": ["Inter"],
+                            "body-md": ["Inter"],
+                            "label-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "headline-xl": ["Inter"],
+                            "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                            "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                            "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(255, 255, 255, 0.5);
+        }
+        .inset-field {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .glow-button {
+            background: linear-gradient(180deg, #0074d9 0%, #005cad 100%);
+            box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 92, 173, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glow-button:hover {
+            box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 92, 173, 0.5);
+            transform: translateY(-1px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 bg-surface-container-low shadow-[20px_0_50px_rgba(0,0,0,0.02)] border-r border-white/40 z-50 flex flex-col h-full py-8">
+<div class="px-8 mb-10 flex flex-col">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-lg shadow-sm">
+                    C
+                </div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Cerebyl</h1>
+<p class="font-label-md text-label-md text-on-surface-variant/70 uppercase tracking-wider text-[10px]">Pharma CRM</p>
+</div>
+</div>
+</div>
+<ul class="flex-1 flex flex-col gap-2">
+<li>
+<a class="text-on-surface-variant flex items-center px-8 py-3 transition-all duration-200 hover:text-primary hover:translate-x-1 group" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px] group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="text-primary font-bold bg-white/60 backdrop-blur-xl rounded-l-full ml-4 pl-4 py-3 shadow-inner border-y border-l border-white/40 flex items-center transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px]">business_center</span>
+<span class="font-label-md text-label-md">Accounts</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant flex items-center px-8 py-3 transition-all duration-200 hover:text-primary hover:translate-x-1 group" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px] group-hover:text-primary transition-colors">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant flex items-center px-8 py-3 transition-all duration-200 hover:text-primary hover:translate-x-1 group" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px] group-hover:text-primary transition-colors">insights</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant flex items-center px-8 py-3 transition-all duration-200 hover:text-primary hover:translate-x-1 group" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px] group-hover:text-primary transition-colors">medical_services</span>
+<span class="font-label-md text-label-md">Medical Affairs</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant flex items-center px-8 py-3 transition-all duration-200 hover:text-primary hover:translate-x-1 group" href="#">
+<span class="material-symbols-outlined mr-4 text-[20px] group-hover:text-primary transition-colors">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+<div class="px-8 mt-auto">
+<button class="w-full glow-button text-on-primary font-label-md text-label-md rounded-full py-3 px-4 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Record
+            </button>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="sticky top-0 right-0 z-40 bg-white/30 backdrop-blur-md border-b border-white/40 shadow-sm flex justify-between items-center px-gutter py-4 ml-64 w-[calc(100%-16rem)]">
+<div class="flex-1 flex items-center">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="inset-field w-full rounded-full pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface placeholder:text-outline/70 focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Search payments, customers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors active:opacity-80">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-8 w-px bg-white/50"></div>
+<img alt="User Profile" class="w-9 h-9 rounded-full object-cover border-2 border-white/80 shadow-sm" data-alt="A small circular avatar of a professional in business casual attire against a clean, bright medical-tech office background. The lighting is soft and flattering, emphasizing a trustworthy and professional persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABDjJ5C3c46MgmbEyihqF0l63XRAb_8uAT5k3u9Y4RjrPwrn0EPJRx2F2BIoJHA3g5FVoidAMdzjjTvR5DoN4fkDwfu1HmCSavTYhEV_eWxghfWEVhzAXLiH7PBtJHTlZpoDAQs_2Pn9OTeKzVbwiSo1WaTitPZEiBWI4gb4bG6F8dN4bAuLLyw8zEW2IInyJNxrX0iUk_p-XYn6eR2wDLqttZoj2bY4aA4U6gxNaME_JAIsDl8R3iAQ"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-gutter max-w-7xl mx-auto space-y-section-gap pb-32">
+<!-- Header Section -->
+<section class="flex justify-between items-end">
+<div>
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">Financial Operations</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface">Payment Intimations</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Review and confirm portal-reported payments to reconcile accounts.</p>
+</div>
+<div class="flex gap-3">
+<button class="glass-card text-on-surface font-label-md text-label-md rounded-full py-2 px-6 flex items-center gap-2 hover:bg-white/80 transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Filter
+                </button>
+<button class="glass-card text-on-surface font-label-md text-label-md rounded-full py-2 px-6 flex items-center gap-2 hover:bg-white/80 transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export
+                </button>
+</div>
+</section>
+<!-- Payment Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Payment Card 1 -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="inline-block px-3 py-1 bg-surface-container-high text-primary rounded-full font-label-md text-[12px] mb-3 border border-white/50">Pending Confirmation</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">St. Jude Medical Center</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Ref: TXN-8492-X</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm border border-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">corporate_fare</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Amount</p>
+<p class="font-headline-md text-[20px] font-semibold text-on-surface">$14,500.00</p>
+</div>
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Reported Date</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">Oct 24, 2023</p>
+</div>
+</div>
+<div class="mt-auto flex gap-3">
+<button class="flex-1 glow-button text-on-primary font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Confirm
+                    </button>
+<button class="flex-1 bg-white/50 hover:bg-error-container/50 text-error font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2 border border-error/20 transition-colors">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                        Reject
+                    </button>
+</div>
+</div>
+<!-- Payment Card 2 -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="inline-block px-3 py-1 bg-surface-container-high text-primary rounded-full font-label-md text-[12px] mb-3 border border-white/50">Pending Confirmation</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">BioGenetics Lab</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Ref: TXN-3391-B</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm border border-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">science</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Amount</p>
+<p class="font-headline-md text-[20px] font-semibold text-on-surface">$2,340.50</p>
+</div>
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Reported Date</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">Oct 23, 2023</p>
+</div>
+</div>
+<div class="mt-auto flex gap-3">
+<button class="flex-1 glow-button text-on-primary font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Confirm
+                    </button>
+<button class="flex-1 bg-white/50 hover:bg-error-container/50 text-error font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2 border border-error/20 transition-colors">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                        Reject
+                    </button>
+</div>
+</div>
+<!-- Payment Card 3 -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="inline-block px-3 py-1 bg-surface-container-high text-primary rounded-full font-label-md text-[12px] mb-3 border border-white/50">Pending Confirmation</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Summit Pharmacy Group</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Ref: TXN-9920-C</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm border border-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">vaccines</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Amount</p>
+<p class="font-headline-md text-[20px] font-semibold text-on-surface">$56,120.00</p>
+</div>
+<div class="inset-field rounded-lg p-3">
+<p class="font-label-md text-label-md text-outline text-[11px] uppercase tracking-wider mb-1">Reported Date</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">Oct 22, 2023</p>
+</div>
+</div>
+<div class="mt-auto flex gap-3">
+<button class="flex-1 glow-button text-on-primary font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Confirm
+                    </button>
+<button class="flex-1 bg-white/50 hover:bg-error-container/50 text-error font-label-md text-label-md rounded-full py-2.5 flex items-center justify-center gap-2 border border-error/20 transition-colors">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                        Reject
+                    </button>
+</div>
+</div>
+</section>
+</main>
+</body></html>

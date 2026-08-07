@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Logistics Management - Transporters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d9d9e2",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "tertiary": "#732900",
+                      "surface-container-high": "#e7e7f1",
+                      "secondary-container": "#d0e1fb",
+                      "on-tertiary-container": "#ffc0a7",
+                      "surface-tint": "#1d59c1",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#d9e2ff",
+                      "on-surface-variant": "#434653",
+                      "on-primary-container": "#bcceff",
+                      "on-tertiary-fixed": "#360f00",
+                      "inverse-primary": "#b0c6ff",
+                      "surface-container-highest": "#e1e2eb",
+                      "outline": "#737784",
+                      "on-primary-fixed-variant": "#00419c",
+                      "surface-bright": "#faf8ff",
+                      "inverse-surface": "#2e3037",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#993900",
+                      "surface-container-low": "#f3f3fc",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-background": "#191b22",
+                      "surface-variant": "#e1e2eb",
+                      "outline-variant": "#c3c6d5",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#d3e4fe",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#54647a",
+                      "surface": "#faf8ff",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "primary-container": "#0f52ba",
+                      "background": "#faf8ff",
+                      "secondary": "#505f76",
+                      "surface-container": "#ededf6",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-surface": "#191b22",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "inverse-on-surface": "#f0f0f9",
+                      "primary": "#003c90",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#001945",
+                      "primary-fixed-dim": "#b0c6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "stack-sm": "4px",
+                      "container-padding": "24px",
+                      "stack-md": "12px",
+                      "table-cell-padding-x": "12px",
+                      "gutter": "16px",
+                      "table-cell-padding-y": "8px"
+              },
+              "fontFamily": {
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "data-tabular": [
+                              "Inter"
+                      ],
+                      "label-uppercase": [
+                              "Inter"
+                      ],
+                      "display-lead-code": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-tabular": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-uppercase": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lead-code": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface font-body-md h-full overflow-hidden flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-container-lowest flex flex-col py-stack-md px-gutter z-30 shadow-[4px_0_12px_rgba(0,0,0,0.02)] hidden md:flex">
+<!-- Brand -->
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-display-lead-code font-bold">C</div>
+<div>
+<h1 class="font-display-lead-code text-display-lead-code text-primary dark:text-primary-fixed-dim m-0">Cerebyl</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">Clinical CRM</p>
+</div>
+</div>
+<!-- Tabs -->
+<ul class="flex flex-col gap-1 flex-1 font-body-md text-body-md">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+                    Leads
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Clients
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+                    Orders
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                    Products
+                </a>
+</li>
+<li>
+<!-- ACTIVE TAB (Semantic Match for Transporters/Partners) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-secondary-container text-on-secondary-container dark:bg-secondary-fixed-dim dark:text-on-secondary-fixed font-medium scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="badge" style="font-variation-settings: 'FILL' 1;">badge</span>
+                    Team
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                    Analytics
+                </a>
+</li>
+<li class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-surface/80 dark:bg-surface-container/80 backdrop-blur-md flex items-center justify-between px-container-padding h-16 shadow-[0_1px_2px_rgba(0,0,0,0.03)] border-b-0">
+<div class="flex items-center gap-4 md:hidden">
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-display-lead-code text-display-lead-code text-primary">Cerebyl</span>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Transporters Management</h2>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-full font-body-sm text-body-sm focus-within:ring-2 focus-within:ring-primary focus:outline-none w-64 transition-all" placeholder="Search partners..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center relative focus-within:ring-2 focus-within:ring-primary">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center focus-within:ring-2 focus-within:ring-primary">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full ml-2 overflow-hidden border border-outline-variant cursor-pointer focus-within:ring-2 focus-within:ring-primary" tabindex="0">
+<img alt="Medical Representative Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a clinical sales representative, soft lighting, modern office background, highly detailed, realistic, corporate aesthetic, 8k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3uQ51zk7kzxy4scM3czt7gS2pUbTZpCFXWb38yhNNEOlGyBCiavtdKFFBVETdczcIA3oKsPCcZfzUTpHzRYZBmpFqp8-he041TNoWJ3Yh56beIWbXsdH9s9j3cOmVm9nNp0qZyTahvhwT0xC6WOz_w4wwAehwrMssIVvaqfyg4IxavhrrQkziMSUw1nrl7QwSomgDKvhrDdbi59w9AI5kGRfmWl6VwHkj_axakx0BS-mKFY8cq8vmAA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 ml-0 md:ml-64 mt-16 p-container-padding overflow-y-auto w-full h-[calc(100vh-4rem)]">
+<div class="max-w-7xl mx-auto">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Active Transporters</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Manage logistics partners and shipment volumes.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex bg-surface-container-lowest rounded-full p-1 border border-outline-variant">
+<button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface font-body-sm text-body-sm shadow-sm transition-all">All</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all">Active</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all">Pending</button>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-body-sm text-body-sm font-medium hover:bg-primary/90 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add Transporter
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column (List) -->
+<div class="lg:col-span-2 space-y-4">
+<!-- Search/Filter Bar inside Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-2 flex items-center gap-2 shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<span class="material-symbols-outlined text-on-surface-variant px-2">filter_list</span>
+<input class="flex-1 bg-transparent border-none focus:ring-0 font-body-sm text-body-sm placeholder:text-on-surface-variant/70" placeholder="Filter by name, route, or ID..." type="text"/>
+<button class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+</button>
+</div>
+<!-- Transporter Cards (Iterative) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col group cursor-pointer hover:border-primary/30 transition-colors">
+<div class="p-4 flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row bg-[#F1F5F9]/30">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center font-display-lead-code font-bold text-lg">
+                                    AP
+                                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+                                        Apex Logistics Int.
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#E0F2FE] text-[#0369A1] font-label-uppercase text-label-uppercase">Verified</span>
+</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">ID: TRN-8924 • Est. 2018</p>
+</div>
+</div>
+<div class="flex items-center gap-6 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-end">
+<div class="text-left sm:text-right">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Total Shipments</p>
+<p class="font-data-tabular text-data-tabular text-on-surface text-lg">1,245</p>
+</div>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors group-hover:bg-primary-container/20">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="px-4 py-3 border-t border-outline-variant/50 flex flex-wrap items-center gap-x-6 gap-y-2 bg-surface-container-lowest">
+<a class="flex items-center gap-2 font-body-sm text-body-sm text-primary hover:underline group/phone" href="tel:+18005550199">
+<span class="material-symbols-outlined text-[16px] group-hover/phone:animate-pulse">call</span>
+                                +1 (800) 555-0199
+                            </a>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+                                dispatch@apexlogistics.com
+                            </div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant ml-auto">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+                                Active currently
+                            </div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col group cursor-pointer hover:border-primary/30 transition-colors">
+<div class="p-4 flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row hover:bg-[#F1F5F9]/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center font-display-lead-code font-bold text-lg">
+                                    NC
+                                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+                                        Northeastern Carriers
+                                    </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">ID: TRN-7731 • Est. 2021</p>
+</div>
+</div>
+<div class="flex items-center gap-6 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-end">
+<div class="text-left sm:text-right">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Total Shipments</p>
+<p class="font-data-tabular text-data-tabular text-on-surface text-lg">432</p>
+</div>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="px-4 py-3 border-t border-outline-variant/50 flex flex-wrap items-center gap-x-6 gap-y-2 bg-surface-container-lowest">
+<a class="flex items-center gap-2 font-body-sm text-body-sm text-primary hover:underline group/phone" href="tel:+18005550244">
+<span class="material-symbols-outlined text-[16px]">call</span>
+                                +1 (800) 555-0244
+                            </a>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+                                contact@necarriers.com
+                            </div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant ml-auto">
+<span class="w-2 h-2 rounded-full bg-[#EAB308]"></span>
+                                At capacity
+                            </div>
+</div>
+</div>
+</div>
+<!-- Right Column (Detail View Glassmorphism Card) -->
+<div class="lg:col-span-1">
+<div class="sticky top-6 bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col h-[calc(100vh-10rem)]">
+<!-- Detail Header -->
+<div class="p-4 border-b border-outline-variant bg-surface-container-lowest relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="w-14 h-14 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center font-display-lead-code font-bold text-xl shadow-inner">
+                                    AP
+                                </div>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1 rounded-full hover:bg-error-container">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<h2 class="font-display-lead-code text-display-lead-code text-on-surface leading-tight">Apex Logistics Int.</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">pin_drop</span>
+                                HQ: Chicago, IL
+                            </p>
+</div>
+<!-- Detail Content (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Quick Stats -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/50">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">On-Time Rate</p>
+<p class="font-data-tabular text-data-tabular text-on-surface text-lg text-[#16A34A]">98.4%</p>
+</div>
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/50">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Active Routes</p>
+<p class="font-data-tabular text-data-tabular text-on-surface text-lg">24</p>
+</div>
+</div>
+<!-- Contact Info -->
+<div>
+<h4 class="font-label-uppercase text-label-uppercase text-on-surface-variant mb-3 border-b border-outline-variant/50 pb-1">Primary Contact</h4>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-full bg-surface-container-high text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Sarah Jenkins</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fleet Operations Manager</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-full bg-primary-container/10 text-primary mt-0.5 hover:bg-primary-container/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[16px]">call</span>
+</div>
+<div>
+<a class="font-data-tabular text-data-tabular text-primary hover:underline" href="tel:+18005550199">+1 (800) 555-0199</a>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Direct Line</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-full bg-surface-container-high text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+</div>
+<div class="break-all">
+<a class="font-body-md text-body-md text-on-surface hover:text-primary transition-colors" href="mailto:s.jenkins@apexlogistics.com">s.jenkins@apexlogistics.com</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Fleet Info Tags -->
+<div>
+<h4 class="font-label-uppercase text-label-uppercase text-on-surface-variant mb-3 border-b border-outline-variant/50 pb-1">Capabilities</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-highest font-body-sm text-body-sm text-on-surface-variant border border-outline-variant/30">Refrigerated</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container-highest font-body-sm text-body-sm text-on-surface-variant border border-outline-variant/30">Flatbed</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container-highest font-body-sm text-body-sm text-on-surface-variant border border-outline-variant/30">Hazmat</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container-highest font-body-sm text-body-sm text-on-surface-variant border border-outline-variant/30">Cross-border (CA/MX)</span>
+</div>
+</div>
+</div>
+<!-- Action Bar Bottom -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-low mt-auto">
+<button class="w-full py-2.5 rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md font-medium hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                                Edit Partner Details
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

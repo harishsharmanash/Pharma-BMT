@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cerebyl - Lead Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#dce9ff",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "outline": "#717785",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#161c22",
+                        "surface-dim": "#cbdbf5",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d5e3ff",
+                        "primary": "#005cad",
+                        "on-background": "#0b1c30",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fcfcff",
+                        "on-secondary-container": "#626567",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "outline-variant": "#c0c6d5",
+                        "error": "#ba1a1a",
+                        "tertiary": "#565d63",
+                        "on-surface-variant": "#414753",
+                        "surface-container": "#e5eeff",
+                        "tertiary-container": "#6f757c",
+                        "surface": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-primary-container": "#fefcff",
+                        "on-primary-fixed-variant": "#004788",
+                        "surface-tint": "#005eb2",
+                        "on-secondary-fixed-variant": "#444749",
+                        "secondary-fixed": "#e0e3e5",
+                        "tertiary-fixed": "#dde3eb",
+                        "surface-variant": "#d3e4fe",
+                        "secondary": "#5c5f61",
+                        "inverse-primary": "#a7c8ff",
+                        "on-primary-fixed": "#001b3b",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "primary-container": "#0074d9",
+                        "on-tertiary-fixed-variant": "#41474e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "24px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "card-padding": "32px",
+                        "section-gap": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.02), inset 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .pill-btn {
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%), var(--tw-colors-primary);
+            box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.3);
+        }
+        .pill-btn:hover {
+            box-shadow: 0px 4px 20px rgba(0, 92, 173, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex">
+<!-- SideNavBar (Suppressed due to Lead Details being a focused transactional/sub-page) -->
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col w-full h-screen overflow-y-auto relative">
+<!-- Header / Nav -->
+<header class="sticky top-0 right-0 z-40 bg-white/30 backdrop-blur-md border-b border-white/40 shadow-sm flex justify-between items-center px-gutter py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary">Cerebyl</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="text-on-surface-variant hover:bg-white/20 rounded-full p-2 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover border-2 border-white ml-2" data-alt="A small, circular avatar portrait of a professional woman in a modern clinical setting. High-key lighting, bright medical-tech aesthetic, white and blue color tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDosKHeQxLo1MUgumxDlwKxCJ0qRGDOGGVln_o39QOu4XWfvJiWmQ34PLlCCL94IvmdP49irlMAo-gRIGxTrZax-a1Wth6YhjMcf2LcdPCC0jyRtTWO7cX9PDT5mshKlVOv6a6jEIqiAT953CpLeHFV1TsvfKtFkKo5gRr81o5HhmWua4yHjzmkl0Na0JwifQ0B-N2e2ZWDfrCkQiE1UGhSP3sB74KJcnsf6h6T10vaPRdTk3171VckIQ"/>
+</div>
+</header>
+<div class="px-gutter py-section-gap max-w-7xl mx-auto w-full flex-1">
+<!-- Lead Header -->
+<div class="glass-card rounded-2xl p-card-padding mb-stack-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-start md:items-center gap-6">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-sm relative">
+<img alt="Dr. Sarah Jenkins" class="w-full h-full object-cover" data-alt="A professional headshot portrait of Dr. Sarah Jenkins, a female doctor in her 40s wearing a white coat over a blue blouse. The background is a clean, modern clinical office softly blurred. Bright, high-quality corporate lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn9MAhRtvYaeOgha3aFqh4rzArMsq2sVAxd4DVOYZMNsN8KG7rFGfKYizi0o285sGowz_uOVMp1oYUVxHJzlrrfJqa11xSZyygi7pmmOQoHzx37ZLkrwxcMDeVx-rgfRTRW100vKnf8PCsnk5BOTcxGRnRtufOuao4mvPc8L5fOS0fxzapPAFyFTi9BC0angj-iVMO9Q0LNvBz-Qnbf7ev_AtlvXV_NcUYOrETjbXgtfgg79daSMiAQQ"/>
+</div>
+<div>
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold mb-2">Dr. Sarah Jenkins</h1>
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-label-md text-label-md bg-surface-container-high text-primary px-3 py-1 rounded-full border border-white/50 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified">verified</span> Qualified
+                            </span>
+<span class="font-label-md text-label-md bg-error-container text-on-error-container px-3 py-1 rounded-full border border-white/50 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="local_fire_department">local_fire_department</span> Hot
+                            </span>
+<span class="font-body-md text-body-md text-on-surface-variant ml-2">Chief of Neurology, Metro General</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:bg-white/80 transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="call">call</span>
+</button>
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-green-600 hover:bg-white/80 transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</button>
+<button class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:bg-white/80 transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</button>
+<button class="pill-btn font-label-md text-label-md text-on-primary px-6 py-3 rounded-full flex items-center gap-2 transition-all ml-4">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+                        Edit Lead
+                    </button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex items-center gap-8 border-b border-outline-variant/30 mb-stack-md px-4">
+<button class="font-label-md text-label-md text-primary border-b-2 border-primary pb-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="info">info</span> Info
+                </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="contacts">contacts</span> Contacts
+                </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span> Documents
+                </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_balance_wallet">account_balance_wallet</span> Ledger
+                </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary pb-3 px-2 flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="book">book</span> Diary
+                </button>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Left Column (Wider) -->
+<div class="lg:col-span-2 flex flex-col gap-stack-md">
+<!-- Business Info Card -->
+<div class="glass-card rounded-2xl p-card-padding">
+<h2 class="font-headline-md text-headline-md text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint" data-icon="business">business</span>
+                            Business Information
+                        </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-1 block">Primary Practice</label>
+<div class="font-body-md text-body-md text-on-surface bg-white/50 rounded-lg p-3 border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                                    Metro General Hospital - Neurology Wing
+                                </div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-1 block">Specialty</label>
+<div class="font-body-md text-body-md text-on-surface bg-white/50 rounded-lg p-3 border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                                    Neurology, Cognitive Disorders
+                                </div>
+</div>
+<div class="md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface-variant mb-1 block">Address</label>
+<div class="font-body-md text-body-md text-on-surface bg-white/50 rounded-lg p-3 border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] flex items-start gap-2">
+<span class="material-symbols-outlined text-outline mt-0.5 text-[20px]" data-icon="location_on">location_on</span>
+                                    1245 Healthway Blvd, Suite 400<br/>Medical District, NY 10021
+                                </div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-1 block">License Number</label>
+<div class="font-body-md text-body-md text-on-surface bg-white/50 rounded-lg p-3 border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                                    MD-8472910-NY
+                                </div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant mb-1 block">NPI</label>
+<div class="font-body-md text-body-md text-on-surface bg-white/50 rounded-lg p-3 border border-white/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                                    1942859301
+                                </div>
+</div>
+</div>
+</div>
+<!-- Recent Activity (Empty State handled by Ceremate) -->
+<div class="glass-card rounded-2xl p-card-padding flex-1 min-h-[300px] flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-[64px] text-primary/40 mb-4" data-icon="smart_toy">smart_toy</span>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">No Recent Activity</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Ceremate is tracking interactions. Log a call or schedule a meeting to begin building this profile's history.</p>
+<button class="mt-6 font-label-md text-label-md text-primary border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/5 transition-colors">
+                             Log Interaction
+                         </button>
+</div>
+</div>
+<!-- Right Column (Sidebar-esque) -->
+<div class="flex flex-col gap-stack-md">
+<!-- Product Interest -->
+<div class="glass-card rounded-2xl p-card-padding">
+<h2 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint" data-icon="medication">medication</span>
+                            Product Interest
+                        </h2>
+<div class="space-y-4">
+<div class="bg-surface-container-low rounded-xl p-4 border border-white/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full -mr-8 -mt-8"></div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-label-md text-label-md text-on-surface font-bold">Neurocept (Phase III)</h4>
+<span class="bg-surface-container-high text-primary text-xs px-2 py-1 rounded font-semibold">High</span>
+</div>
+<p class="font-body-md text-[13px] text-on-surface-variant">Expressed strong interest during last symposium regarding efficacy in early-stage cognitive decline.</p>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 border border-white/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full -mr-8 -mt-8"></div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-label-md text-label-md text-on-surface font-bold">SynaptaXR</h4>
+<span class="bg-surface-container-high text-on-surface-variant text-xs px-2 py-1 rounded font-semibold">Medium</span>
+</div>
+<p class="font-body-md text-[13px] text-on-surface-variant">Requested clinical trial data comparison vs current standard of care.</p>
+</div>
+</div>
+<button class="w-full mt-4 font-label-md text-label-md text-primary py-2 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="add">add</span> Add Product
+                        </button>
+</div>
+<!-- Key Contacts Summary -->
+<div class="glass-card rounded-2xl p-card-padding">
+<h2 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint" data-icon="group">group</span>
+                            Key Personnel
+                        </h2>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 p-2 hover:bg-white/40 rounded-lg transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-primary-fixed-dim text-primary flex items-center justify-center font-bold text-sm">
+                                    MJ
+                                </div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Mark Johnson</div>
+<div class="font-body-md text-[12px] text-on-surface-variant">Office Manager</div>
+</div>
+</li>
+<li class="flex items-center gap-3 p-2 hover:bg-white/40 rounded-lg transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface flex items-center justify-center font-bold text-sm">
+                                    EL
+                                </div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Elena Rodriguez</div>
+<div class="font-body-md text-[12px] text-on-surface-variant">Head Nurse</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

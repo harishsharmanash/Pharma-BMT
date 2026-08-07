@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Staff Directory - Cerebyl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#191c1e",
+                        "tertiary-container": "#6f757c",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "primary": "#005cad",
+                        "primary-fixed": "#d5e3ff",
+                        "on-primary-fixed-variant": "#004788",
+                        "on-primary-container": "#fefcff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary": "#565d63",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#626567",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "on-primary-fixed": "#001b3b",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-secondary-fixed-variant": "#444749",
+                        "on-background": "#0b1c30",
+                        "outline-variant": "#c0c6d5",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#dde3eb",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#414753",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "secondary-container": "#e0e3e5",
+                        "primary-container": "#0074d9",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#41474e",
+                        "secondary": "#5c5f61",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "surface-tint": "#005eb2",
+                        "inverse-primary": "#a7c8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#fcfcff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#161c22",
+                        "outline": "#717785",
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "32px",
+                        "section-gap": "64px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .inset-field {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant flex flex-col py-gutter">
+<div class="px-8 mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="medical_information">medical_information</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed">Cerebyl</h1>
+<p class="font-label-md text-label-md text-secondary">Pharma CRM</p>
+</div>
+</div>
+<div class="px-4 mb-8">
+<button class="w-full bg-primary text-on-primary py-3 rounded-full font-label-md text-label-md shadow-md flex items-center justify-center gap-2 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Lead
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-surface dark:bg-surface-bright text-primary font-semibold rounded-l-full ml-4 pl-4 py-3 shadow-sm group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="person_search" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person_search</span>
+<span class="font-label-md text-label-md">Team</span>
+</a>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="medical_services">medical_services</span>
+<span class="font-label-md text-label-md">Physicians</span>
+</a>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="map">map</span>
+<span class="font-label-md text-label-md">Territories</span>
+</a>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="insights">insights</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-8 py-3 hover:bg-surface-container-high transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant px-4">
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-4 py-3 hover:bg-surface-container-high transition-all duration-300 group rounded-lg" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-secondary hover:text-on-surface px-4 py-3 hover:bg-surface-container-high transition-all duration-300 group rounded-lg" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="contact_support">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-surface dark:bg-surface-dim flex justify-between items-center px-container h-16 px-8 border-b border-surface-container-highest">
+<div class="flex-1 flex items-center">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiary" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-full inset-field bg-surface-container-low border-none text-on-surface focus:ring-2 focus:ring-primary font-body-md text-body-md" placeholder="Search directory..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-secondary hover:bg-surface-container-high rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-secondary hover:bg-surface-container-high rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<button class="p-2 text-secondary hover:bg-surface-container-high rounded-full transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border-2 border-primary-container ml-2 cursor-pointer">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female doctor or pharma executive wearing a modern white coat, set against a clean, bright, modern clinical background. Soft, high-key lighting for a premium medical tech feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc_1AcAA01iXyu9s0SlbjsBTHGOm2QMJrfOmanUJuzC4gBC7KQPWRic4BkdZrmH2Y9n0qVnKVyh8fMMyoWk5wLyIFdvKbYF7-iH-kftm9Z9NDm-s5dqNMWc9p_8c03P7E7MJbHncBwDhTB_UTu0CkMvE3wKbxKsMPwvb_e35WLdb_OhTBBx3oVc-5Wdg0UxcCP-j3x07L2qklOprNeZPDBtGaYWqjkQ_KvBZ46OMNC1SsPcDU49REKmA"/>
+</div>
+</div>
+</header>
+<div class="p-12 flex-1 max-w-7xl mx-auto w-full flex flex-col gap-section-gap">
+<!-- Page Header & Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-on-background mb-2">Team Management</h2>
+<p class="font-body-lg text-body-lg text-secondary">Oversee personnel, territories, and performance metrics.</p>
+</div>
+<div class="flex items-center gap-4">
+<!-- Lens Bar -->
+<div class="glass-panel flex rounded-full p-1 border border-outline-variant shadow-sm">
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-inner">Directory</button>
+<button class="px-6 py-2 rounded-full text-secondary font-label-md text-label-md hover:text-on-surface transition-colors">Accounts</button>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-full font-label-md text-label-md shadow-md flex items-center gap-2 hover:shadow-lg transition-all duration-300 bg-gradient-to-b from-primary-container to-primary border-t border-white/20">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                        Add User
+                    </button>
+</div>
+</div>
+<!-- Summary Cards (Bento) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
+<div class="flex justify-between items-center z-10">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Total Active Reps</h3>
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+</div>
+<div class="z-10">
+<span class="font-headline-xl text-headline-xl text-on-surface block">142</span>
+<span class="font-body-md text-body-md text-emerald-600 flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> +5 this quarter
+                        </span>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-tint/10 rounded-full blur-xl group-hover:bg-surface-tint/20 transition-all"></div>
+<div class="flex justify-between items-center z-10">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Total Book Size</h3>
+<span class="material-symbols-outlined text-surface-tint" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div class="z-10">
+<span class="font-headline-xl text-headline-xl text-on-surface block">$42.8M</span>
+<span class="font-body-md text-body-md text-emerald-600 flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> +12% YTD
+                        </span>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-secondary-fixed/50 rounded-full blur-xl group-hover:bg-secondary-fixed transition-all"></div>
+<div class="flex justify-between items-center z-10">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Pending Incentives</h3>
+<span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
+</div>
+<div class="z-10">
+<span class="font-headline-xl text-headline-xl text-on-surface block">$1.2M</span>
+<span class="font-body-md text-body-md text-tertiary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 45 reviews pending
+                        </span>
+</div>
+</div>
+</div>
+<!-- Directory Table -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col border border-outline-variant/50">
+<div class="px-6 py-4 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low/50">
+<h3 class="font-headline-md text-headline-md text-on-surface">Staff Directory</h3>
+<div class="flex gap-2">
+<button class="p-2 text-secondary hover:bg-surface-container hover:text-on-surface rounded-md transition-colors">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+<button class="p-2 text-secondary hover:bg-surface-container hover:text-on-surface rounded-md transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest/50 border-b border-outline-variant/30">
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider">Rep Name</th>
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider">Role</th>
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider">Territory</th>
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider">Book Size</th>
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider">Status</th>
+<th class="py-4 px-6 font-label-md text-label-md text-secondary uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-body-md text-body-md text-on-surface">
+<tr class="hover:bg-surface-container-lowest/30 transition-colors">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
+<img alt="Dr. Sarah Jenkins" class="w-full h-full object-cover" data-alt="Professional corporate headshot of a confident male in his 30s wearing a light blue dress shirt. Clean, bright, premium medical-tech lighting aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXsgbjbGDUpgDGY4ihmLLD8UEuuOF12H7w5gw8k_UycjR1g7neFtxuTKKaqBwXPAdCxFd1RiRicKILRZ1JCwqnkA_i9LRM3RjkHeyXdiQk5eSojTi3LdSk0pdleiJk7TI5_4z6pB4vZlDfLzSmOECYleQ5rWEwtjilyoQyBVXQz-9b0jMP7PBoqT5IoepLiTfKqXqW9P-oNtvCZgciiPxHFVusgSQpA_YDPEcZQGzalZyBVr-Zz2ssJA"/>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Dr. Sarah Jenkins</div>
+<div class="text-sm text-secondary">s.jenkins@cerebyl.com</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">Senior Rep</td>
+<td class="py-4 px-6">Northeast (NY, NJ)</td>
+<td class="py-4 px-6 font-semibold">$4.2M</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold uppercase tracking-wider border border-emerald-200 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Active
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-primary hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/30 transition-colors">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
+<img alt="Michael Chen" class="w-full h-full object-cover" data-alt="Professional corporate headshot of a woman in her 40s wearing a modern navy blazer. Clean, bright, premium medical-tech lighting aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0C5crg_IRojNSkNu7ZpVIStIRHsJT9WV_ewHO5GaPQdEjiCFAmJwTbtCd4V7GcoamtwH-TzVSC52uBSeIY39qc048_tl50-DJK6YMDuaAJFV11z32awG19bQtfcrhKT1seu22t44Jb-RUwwuJdcWZ-GjCA1KkcWR7cZCSFJgtaAgWrp05bfedm_AmdokzLji_8AFDm6VbJtU5o5vNNdKwrnwjqIKtjP9j-gjjvOaYRWKw3JPOxZktHw"/>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Michael Chen</div>
+<div class="text-sm text-secondary">m.chen@cerebyl.com</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">Regional Manager</td>
+<td class="py-4 px-6">West Coast (CA, OR)</td>
+<td class="py-4 px-6 font-semibold">$12.5M</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold uppercase tracking-wider border border-emerald-200 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Active
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-primary hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/30 transition-colors">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container flex items-center justify-center text-secondary font-semibold">
+                                            EJ
+                                        </div>
+<div>
+<div class="font-semibold text-on-surface">Elena Rodriguez</div>
+<div class="text-sm text-secondary">e.rodriguez@cerebyl.com</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">Field Rep</td>
+<td class="py-4 px-6">Southwest (TX, AZ)</td>
+<td class="py-4 px-6 font-semibold">$2.1M</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold uppercase tracking-wider border border-amber-200 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> OOTO
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-primary hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/30 transition-colors">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container flex items-center justify-center text-secondary font-semibold">
+                                            DS
+                                        </div>
+<div>
+<div class="font-semibold text-on-surface">David Smith</div>
+<div class="text-sm text-secondary">d.smith@cerebyl.com</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">Senior Rep</td>
+<td class="py-4 px-6">Midwest (IL, OH)</td>
+<td class="py-4 px-6 font-semibold">$3.8M</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold uppercase tracking-wider border border-emerald-200 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Active
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-primary hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest/20">
+<span class="font-label-md text-label-md text-secondary">Showing 1 to 4 of 142 entries</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 rounded-md bg-primary text-on-primary font-label-md text-label-md shadow-sm">1</button>
+<button class="px-3 py-1 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors">2</button>
+<button class="px-3 py-1 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors">3</button>
+<button class="px-3 py-1 rounded-md text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

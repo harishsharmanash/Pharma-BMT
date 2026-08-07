@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Territory Mapping - Cerebyl</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#191c1e",
+                        "tertiary-container": "#6f757c",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "primary": "#005cad",
+                        "primary-fixed": "#d5e3ff",
+                        "on-primary-fixed-variant": "#004788",
+                        "on-primary-container": "#fefcff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary": "#565d63",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#626567",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "on-primary-fixed": "#001b3b",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-secondary-fixed-variant": "#444749",
+                        "on-background": "#0b1c30",
+                        "outline-variant": "#c0c6d5",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#dde3eb",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#414753",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "secondary-container": "#e0e3e5",
+                        "primary-container": "#0074d9",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed-variant": "#41474e",
+                        "secondary": "#5c5f61",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "surface-tint": "#005eb2",
+                        "inverse-primary": "#a7c8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#fcfcff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#161c22",
+                        "outline": "#717785",
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "32px",
+                        "section-gap": "64px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(255, 255, 255, 0.8);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .inner-shadow {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .pill-btn {
+            background: linear-gradient(180deg, #0074d9 0%, #005cad 100%);
+            box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.3), 0 4px 6px rgba(0, 92, 173, 0.2);
+            transition: all 0.2s ease;
+        }
+        .pill-btn:hover {
+            box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.4), 0 6px 12px rgba(0, 92, 173, 0.3);
+            transform: translateY(-1px);
+        }
+        .map-glow {
+            filter: drop-shadow(0 0 15px rgba(0, 92, 173, 0.3));
+        }
+        /* Custom scrollbar for territories list */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 92, 173, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-low border-r border-outline-variant flex flex-col py-gutter">
+<div class="px-8 mb-8 flex flex-col gap-2">
+<div class="text-headline-sm font-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+                Cerebyl
+            </div>
+<span class="font-body-md text-secondary">Pharma CRM</span>
+</div>
+<div class="px-8 mb-6">
+<button class="pill-btn w-full py-3 rounded-full text-on-primary font-label-md flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                New Lead
+            </button>
+</div>
+<ul class="flex-1 flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">person_search</span>
+                    Leads
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">medical_services</span>
+                    Physicians
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-surface text-primary font-semibold rounded-l-full ml-4 pl-4 py-3 shadow-sm group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+                    Territories
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">insights</span>
+                    Analytics
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">description</span>
+                    Reports
+                </a>
+</li>
+</ul>
+<ul class="flex flex-col gap-1 mt-auto">
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">settings</span>
+                    Settings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary hover:bg-surface-container-high transition-all duration-300 group hover:text-on-surface px-8 py-3" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">contact_support</span>
+                    Support
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col h-screen relative">
+<!-- TopNavBar (Responsive, Hidden on lg to favor SideNav, but keeping header elements for this layout) -->
+<header class="h-16 w-full flex justify-between items-center px-container bg-surface/80 backdrop-blur-md sticky top-0 z-30 shadow-sm border-b border-surface-container">
+<div class="px-6 flex items-center w-full justify-between">
+<h1 class="font-headline-md text-headline-md text-on-surface">Territory Mapping</h1>
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:bg-surface-container-high p-2 rounded-full transition-colors duration-200 cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-secondary hover:bg-surface-container-high p-2 rounded-full transition-colors duration-200 cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="text-secondary hover:bg-surface-container-high p-2 rounded-full transition-colors duration-200 cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a sleek, abstract glowing blue crystal sphere representing a high-tech user profile avatar in a brightly lit, sterile pharmaceutical lab setting. The lighting is pristine and clinical, emphasizing the translucent glassmorphism aesthetic of a modern medical interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ9LL3mwXIScP7yfz5FOuGr-0zZGYXXYIrIr84PmKYqRHWEesj8KAjpl7teXd-L1dOVkm6BNWGKIc5oyXbD__3Y6ffeRpK9sn0UoGH0RZRQJlSJHYPrAm-wT3plUd_3KUOAstSpcJdtfZDpzdc5bj9wyj9kD36SvXCBhX9uWDXS7Hb-JU5D_IXCBYvYkvsQSWyZvl0IxX4kajEG4VjRRcjG_Je5NdX-7J6CWlz13NlO0cdxj-OGbvpRA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 p-gutter flex gap-6 overflow-hidden relative">
+<!-- Map Area (Main Canvas) -->
+<div class="flex-1 relative rounded-xl overflow-hidden glass-card">
+<!-- Map Background -->
+<div class="absolute inset-0 bg-cover bg-center w-full h-full opacity-60" data-alt="A highly detailed, futuristic 3D topographical map of India rendered in a luminous, light-mode glassmorphic aesthetic. The map features smooth, elevated glowing regions in soft blues and cyans representing medical sales territories. The background is a clean, semi-transparent white surface, giving the impression of an interactive holographic display table in a high-end corporate setting." data-location="India" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCyJk4urp_n98DHvhs9cVzPApCDqmm8ZILpvWXGIJzhixM7XXwl5e9fraZ8gGL_QborTunjRyvtsfyPqmdNAbR0VolgZatlpDKpdbse8EnsPoJzbvQCwoakkRBExRsOfXNo6ndk24eUNVBr985P4HEhfTWLRp0iu19TAschoCQjJmWPBtspo91GpEXefjfl3Yd8fOA2b_g8Rh_LoS6xhqxIec737X2bnaGZe7oReYzdrzEXaPbQJJmqkA')"></div>
+<!-- Map Overlay Elements (Simulated Territories) -->
+<div class="absolute inset-0 p-8 flex flex-col justify-between z-10">
+<div class="flex justify-between items-start">
+<div class="glass-panel p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">my_location</span>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Active Region</h3>
+<p class="font-body-md text-body-md text-secondary">India (National)</p>
+</div>
+</div>
+<button class="pill-btn px-6 py-3 rounded-full text-on-primary font-label-md flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined">download</span>
+                            Download PDF
+                        </button>
+</div>
+<!-- Interactive Map Markers (Mockup) -->
+<div class="relative w-full h-full">
+<!-- South Delhi Marker -->
+<div class="absolute top-1/4 left-1/3 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-6 h-6 bg-primary/20 rounded-full animate-ping absolute"></div>
+<div class="w-4 h-4 bg-primary rounded-full relative z-10 border-2 border-white map-glow shadow-md"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-surface text-on-surface font-label-md px-3 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap glass-panel">
+                                South Delhi (Assigned)
+                            </div>
+</div>
+<!-- Mumbai West Marker -->
+<div class="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-4 h-4 bg-tertiary-container rounded-full relative z-10 border-2 border-white shadow-md"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-surface text-on-surface font-label-md px-3 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap glass-panel">
+                                Mumbai West (Pending)
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar: Booked Territories -->
+<div class="w-96 flex flex-col gap-4">
+<div class="glass-card rounded-xl p-card-padding flex-1 flex flex-col h-full overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Booked Territories</h2>
+<span class="bg-primary-fixed text-on-primary-fixed-variant font-label-md px-2 py-1 rounded-md">24 Active</span>
+</div>
+<!-- Search / Filter -->
+<div class="mb-4 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 font-body-md text-on-surface inner-shadow focus:ring-2 focus:ring-primary/50 transition-all placeholder-secondary/70" placeholder="Search territories or reps..." type="text"/>
+</div>
+<!-- List of Territories -->
+<div class="flex-1 overflow-y-auto pr-2 flex flex-col gap-3">
+<!-- Territory Item 1 -->
+<div class="glass-panel p-4 rounded-lg border border-primary/20 hover:border-primary/50 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-md text-label-md text-primary group-hover:text-primary-container transition-colors">South Delhi</h3>
+<span class="material-symbols-outlined text-primary/60 text-sm">open_in_new</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a confident female pharmaceutical sales representative with a warm smile, set against a pristine, brightly lit modern clinic background. The lighting is soft and clinical, enhancing the high-end corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpAKH8mJetXWittdDMsxl1E8hjtxISGdITQV9BaYLG_5VfYZF2_wBs-hFUedyZsxV_XVT5Mvizk2eLdDrRMq8-UkHF7wdVoQH3-7CY5gYEj1Y5ema5fLcxw1r0xX-x0Qw-Z_QlpW1JG-olqE_y10OAowr4woXCPce3OvUfuBjODmbqsEQS1_oQYhEak4Y-OUpucuOJ1OcaUQo2lrw8E9GebmquADXVN6jOjN1sqvnb0x1x9-shKHf_zA"/>
+</div>
+<span class="font-body-md text-body-md text-secondary">Priya Sharma</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">Cardiology</span>
+<span class="text-[10px] font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">Q3 Target: 85%</span>
+</div>
+</div>
+<!-- Territory Item 2 -->
+<div class="glass-panel p-4 rounded-lg border border-outline-variant/30 hover:border-primary/30 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Mumbai West</h3>
+<span class="material-symbols-outlined text-secondary/40 text-sm">open_in_new</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex items-center justify-center text-xs font-bold text-tertiary">
+                                    AR
+                                </div>
+<span class="font-body-md text-body-md text-secondary">Rahul Verma</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">Neurology</span>
+</div>
+</div>
+<!-- Territory Item 3 -->
+<div class="glass-panel p-4 rounded-lg border border-outline-variant/30 hover:border-primary/30 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Bangalore Tech Park</h3>
+<span class="material-symbols-outlined text-secondary/40 text-sm">open_in_new</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex items-center justify-center text-xs font-bold text-tertiary">
+                                    SN
+                                </div>
+<span class="font-body-md text-body-md text-secondary">Sneha Nair</span>
+</div>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">Oncology</span>
+<span class="text-[10px] font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">New</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
