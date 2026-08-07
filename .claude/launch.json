@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cerebyl-dev",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd leadenthrella && npm run dev"
+      ],
+      "port": 8080,
+      "url": "http://localhost:8080"
+    },
+    {
+      "name": "z-repro",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd leadenthrella && npx vite -c __repro.vite.config.mjs"
+      ],
+      "port": 5199,
+      "url": "http://localhost:5199"
+    },
+    {
+      "name": "overflow-repro",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd leadenthrella && npx vite -c __repro.vite.config.mjs"
+      ],
+      "port": 5199,
+      "url": "http://localhost:5199"
+    }
+  ]
+}

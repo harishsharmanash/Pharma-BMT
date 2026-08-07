@@ -1,0 +1,33 @@
+ * Stitch design language (approved visual direction — app shell + Leads).
+ *
+ * Light-only by design: all values are fixed hex, defined once under the
+ * `.stitch` scope class so they render identically regardless of the `dark`
+ * class and cannot leak into the app's semantic tokens. Colour vars use the
+ * `--st-` prefix because `--primary`, `--background` etc. already exist above
+ * and mean something else. The existing iOS tokens (--font-ios, text-ios-*,
+ * ease-ios) are untouched and still used elsewhere.
+ *
+ * Apply the `stitch` class to a subtree root (app shell, Leads pages,
+ * /dev/leads) to opt in. Reference implementation: src/routes/dev.leads.tsx.
+ * ------------------------------------------------------------------------- */
+.stitch {
+  --st-primary: #2589f5;
+  --st-on-primary: #ffffff;
+  --st-background: #f8f9ff;
+  --st-on-surface: #191b22;
+  --st-on-surface-variant: #434653;
+  --st-outline: #737784;
+  --st-outline-variant: #c3c6d5;
+  --st-surface-variant: #e1e2eb;
+  --st-surface-container-low: #eff4ff;
+  --st-surface-container-high: #e7e7f1;
+  --st-secondary: #505f76;
+  --st-secondary-container: #d0e1fb;
+  --st-on-secondary-container: #54647a;
+  --st-error: #ba1a1a;
+  --st-error-container: #ffdad6;
+  --st-on-error-container: #93000a;
+  --st-primary-fixed-dim: #b0c6ff;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--st-on-surface);
+}

@@ -1,0 +1,37 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cerebyl-lead-intake",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-07-15",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": true,
+	/**
+	 * Email Routing send binding — required for `message.forward(...)`.
+	 * https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/
+	 */
+	"send_email": [
+		{
+			"name": "LEAD_FORWARD"
+		}
+	],
+	/**
+	 * Environment Variables (non-sensitive)
+	 * Secrets are set separately, NEVER here:
+	 *   npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+	 *   npx wrangler secret put GEMINI_API_KEY
+	 */
+	"vars": {
+		"SUPABASE_URL": "https://cjowrlrjyhdltbyqwozr.supabase.co",
+		"GEMINI_MODEL": "gemini-3.1-flash-lite"
+	}
+}

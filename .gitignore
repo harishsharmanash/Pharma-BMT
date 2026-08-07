@@ -1,0 +1,19 @@
+# macOS junk
+.DS_Store
+
+# aider
+.aider*
+
+# dependencies & build output
+node_modules/
+.output/
+.wrangler/
+.tanstack/
+dist/
+
+# Nested projects with their OWN git repos — tracked there, not here
+leadenthrella/
+acrowell-ai-worker/
+
+# Large reference media — stays on Google Drive, not in git (365 MB of inspiration videos/zips)
+Files/App UI inspirations/
