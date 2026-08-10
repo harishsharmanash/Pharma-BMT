@@ -4,6 +4,63 @@
 
 ---
 
+## 2026-08-10 — Claude Opus (lead), DeepSeek V4 Flash (worker)
+
+### Detail routes finally got their design pass — SHIPPED to local commits, NOT PUSHED (`4934c81`)
+- `leads.$id` / `parties.$id` / `orders.$id` were the last un-restyled surfaces. Four aider tickets
+  (G1 leads cleanup, G2 parties, G3 orders, G4 leads detail), run as two parallel pairs on disjoint
+  file sets. Tickets at `Files/scratchpad/ticket-2026-08-10-G{1..4}-*.md`, built from a shared
+  `_preamble.md` so DeepSeek's disk cache hits across runs — that pattern works, keep it.
+- Also in `4934c81`: `LogCallDialog` was defined **twice, byte-identical**, in `leads.all.tsx` and
+  `leads.$id.tsx` → extracted to `src/components/log-call-dialog.tsx`. And the lead header's bare
+  Delete moved into the canonical `MoreVertical` + `ConfirmDelete` dropdown (last such site).
+- **Three worker slips caught in diff review — the pattern from 7 Aug repeats: DeepSeek invents and
+  flattens under design pressure.** (1) `parties.$id` dropped `tagBadgeClass`, flattening the
+  colour-categorised party tags (VIP violet / risk amber / cash emerald / blacklist red) to one grey
+  tone — a shipped client feature, silently lost. (2) `orders.$id` invented a Due/Paid pill next to
+  `StatusBadge`, which already renders payment status off the same field, and it would have read
+  "Paid" on a zero-total order. (3) Verified by hand that the invoice printable node
+  (`position:fixed; left:-10000px` — NOT `display:none`, html2canvas can't capture that) and the
+  hoisted column definitions were untouched. **Never accept a design diff without checking what got
+  simplified away.**
+- Gates: `tsc` 0, 361/361 vitest, `ship.sh --dry-run` green incl. the artifact assertion.
+  **Not visually verified** — all three routes are behind auth and I won't type a password into a
+  login form. Next lead: either build unauthenticated mock routes (the `/dev/leads` trick that got a
+  whole design approved in one round) or have Harish screenshot the live pages.
+
+### Notification duplicate fixed — and CLAUDE.md's recommendation was BACKWARDS (`05238d9`)
+- One overdue follow-up buzzed the rep twice: `generate_due_notifications` section 4 (`followup_due`)
+  and `generate_lead_followup_notifications_for_user` (`lead_followup`) both emitted it.
+- §8g said to drop section 4. **Wrong.** Section 4 honours `fu*_status` and checks each of the five
+  slots; `lead_followup` ignored status entirely (nagging about completed follow-ups) and took
+  `GREATEST()` of the five dates while naming it `next_fu` — GREATEST is the *latest*, so a lead with
+  an overdue fu1 and a future fu5 **silently never notified at all**. Dropped `lead_followup`.
+  Migration `20260816120000` also revokes the PUBLIC/anon EXECUTE that `generate_due_notifications()`
+  inherited (the 08-05 migration revoked its two siblings but missed it).
+- ⚠️ **Migration is NOT applied to the live DB** — needs Harish in the SQL Editor. Until then cron
+  still generates duplicates nightly; the frontend no longer calls it, so no worse than before.
+
+### Audit found THREE doc claims that were stale (`61a95ca`) — the recurring failure mode
+- **Pack-size attributes**: listed as "specced, not started"; actually fully shipped and live —
+  columns applied, `use-products.ts:15-17`, form fields + filter in `products.all.tsx`, portal
+  facets in `portal.ts`. Two weeks of a live feature listed as unbuilt.
+- **Touch targets**: listed as "deliberately not fixed"; `.hit-area-44` shipped in `468f710`.
+  Recorded the adjacency rule (class on ONE of two adjacent icon buttons only) and the real residual
+  (three dense pairs need a row-*spacing* pass first).
+- **Parties detail** was already partly stitch-styled, contradicting "detail routes have had no pass
+  at all".
+- All three corrected in `CLAUDE.md` with `file:line` evidence. **Grep the code before believing any
+  list in this repo, including one you wrote.**
+
+### Environment note that will bite the next lead
+`DEEPSEEK_API_KEY` lives in `~/.zshrc`, which a **non-interactive shell does not source** — aider
+fails with no key unless every invocation starts `source ~/.zshrc >/dev/null 2>&1 &&`. Also
+pre-existing and unrelated to this session: `npm run dev` logs a hydration mismatch from
+`__root.tsx` — the server emits `class="dark"` / `color-scheme: dark` on a **light-only** app. Worth
+a look; it is not caused by any change here.
+
+---
+
 ## 2026-08-07 (later) — Claude Opus (lead)
 
 ### Cloudflare Workers Builds CI race — RESOLVED ✓ (repo disconnected by Harish)
