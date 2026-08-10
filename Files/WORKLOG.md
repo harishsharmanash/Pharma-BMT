@@ -9,6 +9,25 @@
 **PUSHED and DEPLOYED — live chunk `index-B5x5ICP8.js`. Migration applied by Harish and
 probe-verified.**
 
+### Phone bottom tab bar — BUILT (`3fa12f7`), live chunk `index-ib4fU0Dr.js`
+- The Stitch brief's bottom tab bar had never been built; mobile nav was a hamburger + slide-over.
+  Now: Dashboard · Leads · Clients · Orders · **More**, `md:hidden`, fixed, `pb-safe`.
+- **Built from the already-gated `visible` list, never NAV directly** — a rep who cannot open
+  Clients just gets a shorter bar. The gap is deliberately NOT back-filled from other sections:
+  back-filling would put a different destination in the same screen position per role.
+- **More opens the EXISTING slide-over**, so there is still one nav definition feeding both and every
+  section stays reachable (verified live: all 10 sections present in the sheet). The header hamburger
+  was removed — two triggers for one menu is clutter.
+- `main` needed `pb-28`: it is the scroll container (not the window), so without it the last card
+  sits under the fixed bar and cannot be scrolled to. Verified live: `padding-bottom: 112px`.
+- **Because the hamburger is gone this bar is the ONLY phone navigation**, so it ships with
+  `src/test/app-shell-bottom-nav.test.tsx` (4 tests): renders, More opens the sheet, gated
+  destinations vanish without back-filling, 56px target contract. **Mutation-verified** — dropping a
+  tab and neutering More each turn it red. Suite now **368 tests / 32 files**.
+- ⚠️ **Verifying a deploy in an already-open tab shows the CACHED bundle.** The first live check said
+  "bar absent, hamburger still there" purely because of that. A cache-busting query param
+  (`?cb=…`) settled it immediately. Do not conclude a deploy failed from a stale tab.
+
 ### Post-deploy visual pass + mobile audit (`d1b274e`)
 - Reviewed all three detail routes live in a logged-in browser. Three fixes shipped:
   **(1)** the three detail pages rendered at three different widths (leads uncapped, parties
