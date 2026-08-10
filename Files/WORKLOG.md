@@ -6,7 +6,7 @@
 
 ## 2026-08-10 — Claude Opus (lead), DeepSeek V4 Flash (worker)
 
-**PUSHED and DEPLOYED — live chunk `index-B5x5ICP8.js`. Migration applied by Harish and
+**PUSHED and DEPLOYED — latest live chunk `index-BlasWS23.js`. Migration applied by Harish and
 probe-verified.**
 
 ### OS dark mode was hijacking a light-only app — FIXED (`0d39c55`), live `index-BlasWS23.js`
