@@ -268,7 +268,7 @@ Routes: `src/routes/` (TanStack file-based; each domain has a list route + often
 
 > **`?party=` was overloaded (fixed 25 Jul).** On `/orders` it meant BOTH "filter to this party" AND "open the new-order dialog" (the assistant's `start_order` relied on the latter). So the party page's "All orders for this party" popped the new-order form, and closing it landed on the unfiltered list. Now `?party=` filters only; opening the form needs an explicit `?new=1`, and `start_order` passes both.
 
-**Still open from that pass:** (the ~7 delete-site relocations previously listed here are DONE — verified 30 Jul 2026, all use the canonical `DropdownMenu` + ghost `MoreVertical` + `ConfirmDelete` pattern; one remaining candidate is the header Delete on `leads.$id.tsx:199`) · the daily purge **IS now scheduled** (30 Jul 2026): pg_cron job `daily-purge-old-data` at 21:00 UTC / 02:30 IST, secret read from Vault (`cron_secret`), verified with a manual fire returning HTTP 200. **Firing it exposed a real bug**: `purge_activity_log()` was REVOKEd but never GRANTed to service_role, so the Activity Log's 90-day retention had never once run — fixed by migration `20260730170000_fix_purge_activity_log_grant.sql` · pack-size attributes (dosage form, volume, Alu-Alu vs Blister, + filtering) specced by Harish, not started.
+**Still open from that pass:** (the ~7 delete-site relocations previously listed here are DONE — verified 30 Jul 2026, all use the canonical `DropdownMenu` + ghost `MoreVertical` + `ConfirmDelete` pattern; one remaining candidate is the header Delete on `leads.$id.tsx:199`) · the daily purge **IS now scheduled** (30 Jul 2026): pg_cron job `daily-purge-old-data` at 21:00 UTC / 02:30 IST, secret read from Vault (`cron_secret`), verified with a manual fire returning HTTP 200. **Firing it exposed a real bug**: `purge_activity_log()` was REVOKEd but never GRANTed to service_role, so the Activity Log's 90-day retention had never once run — fixed by migration `20260730170000_fix_purge_activity_log_grant.sql` · ~~pack-size attributes~~ — **SHIPPED, verified 10 Aug 2026. DO NOT REBUILD.** Migration `20260808120000_product_pack_attributes.sql` is applied live (`dosage_form` / `pack_size` / `packing_type` on `products`, seeded `dropdown_options` for both lists), the columns are in the regenerated types, `use-products.ts:15-17` carries them, and `products.all.tsx` has the form fields (`:1680-1698`, packing type conditional on solid oral forms via `showPackingType`), the dosage-form filter (`:218`), the filter chip (`:361`) and the card display (`:728`). The distributor portal even facets on `dosage_form` (`portal.ts:36,122`). This entry said "not started" for two weeks while the feature was live — audit before building.
 
 **Small open items:** Tier-1 misrouted "sabse zyada dues kiske hain?" to `ask_clarification` once (routing prompt may need a ranking-question example) · 608-row corpus re-run · V6/V7 live verifications (need Harish's login) · ₹99 test rate cleanup on Shree Balaji · stale-catalog-name limitation · per-portal deterministic parsers for PharmaHopper/Pharmavends need real sample `.eml` files from Harish (Gemini fallback covers them meanwhile).
 
@@ -314,9 +314,15 @@ A full day of production-readiness work. **All of this is DEPLOYED and VERIFIED 
   invoices. Nothing is in scope until a company is actually terminated.
 - **Accessibility** — `src/lib/use-motion-safe.ts` makes framer-motion respect
   `prefers-reduced-motion` (the CSS blanket in `styles.css` never could); keyboard access on
-  clickable rows/cards; focus rings restored. **Touch targets are still open** — deliberately not
-  fixed, because resizing `components/ui/button.tsx` ripples app-wide. Preferred approach is an
-  invisible `::after` 44px hit-area at the flagged call sites.
+  clickable rows/cards; focus rings restored. **Touch targets are DONE** (commit `468f710`, verified
+  10 Aug 2026) — a `.hit-area-44` utility in `styles.css` (`inset: -8px`) expands the *hit* area
+  without changing visible size, applied to 9 flagged controls; the password eye toggle went
+  `p-0.5`→`p-1.5` because a 16px icon can't reach 44px from the inset alone. **Adjacency rule: where
+  two icon buttons sit adjacent, the class goes on ONE only** — overlapping invisible areas let the
+  later element win and partially kill the first, which is worse than the original problem. Do not
+  "finish the job" by adding it to the other button. Residual: three dense adjacent pairs (claims
+  approve/reject, attendance prev/next, stock tabs) still need a row-*spacing* pass before they can
+  take hit areas at all. This entry claimed the whole item was unstarted long after it shipped.
 - **Vendored UI skills** — see §2 item 4b.
 
 ### 🚨 `fetch-all.ts` — the invariant you must not break
@@ -465,7 +471,14 @@ Phase 11 intent that dormant users cost nothing.
 
 **Known open items:** overdue lead follow-ups are generated TWICE by two functions
 (`followup_due` from `generate_due_notifications` section 4, `lead_followup` from the dedicated
-function) — one follow-up, two buzzes; recommend dropping section 4. `generate_due_notifications()`
+function) — one follow-up, two buzzes. **FIXED 10 Aug 2026 (migration `20260816120000`), and the
+recommendation here was BACKWARDS — we dropped `lead_followup`, not section 4.** Section 4 is the
+correct generator: it honours `fu*_status` (so a completed follow-up stops nagging) and checks each
+of the five slots separately. `lead_followup` ignored status entirely and took `GREATEST()` of the
+five dates while calling it `next_fu` — GREATEST is the *latest* date, so a lead with an overdue fu1
+and a future fu5 silently never notified at all. Its only edge was setting `lead_id`, and
+`notification-bell.tsx` renders title/body only and never deep-links by it. Lesson: check which
+duplicate is actually correct before deleting either. `generate_due_notifications()`
 is still executable by **anon** (the July migration granted to `authenticated` but never revoked
 PUBLIC's default) — harmless today since `current_company_id()` is NULL for anon so it returns
 immediately, but it should be revoked. No monochrome notification icon yet, so Android renders the
