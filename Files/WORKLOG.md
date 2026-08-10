@@ -9,6 +9,40 @@
 **PUSHED and DEPLOYED — live chunk `index-B5x5ICP8.js`. Migration applied by Harish and
 probe-verified.**
 
+### OS dark mode was hijacking a light-only app — FIXED (`0d39c55`), live `index-BlasWS23.js`
+- **The bug:** both the pre-paint script in `__root.tsx` and `ThemeProvider` derived the theme from
+  `prefers-color-scheme`. Any user whose OS is set to dark got a **dark UI for a product with no dark
+  palette designed** — and `ThemeProvider` then PERSISTED that auto-derived value, so it stuck.
+  Proven live before the fix: fresh visit with OS dark → `savedTheme: "dark"`, body background
+  `oklch(0.19 0.02 230)`, sign-in card rendered as a murky grey panel.
+- **This was also the hydration mismatch.** SSR markup is never dark; the inline script added `dark`
+  before hydration, so server and first client paint disagreed on every page.
+- **Fix:** no `prefers-color-scheme` fallback anywhere. Light unless the user explicitly picks dark
+  from the account menu (that still works and still persists). Storage key bumped to
+  `crm-theme-v2` so values auto-written by the old behaviour are discarded instead of silently
+  keeping people dark. Verified live both ways on a dark-emulated browser.
+- **Worth asking Harish:** the account menu still exposes a dark toggle to a palette nobody designed.
+  Removing it is a product decision, so it was left alone — but light-only is the stated direction.
+
+### Three more render suites + tap-target spacing (same commit)
+- `dashboard`, `products.all`, `team.directory` now have render coverage → **371 tests / 35 files.**
+- **Three defects in the generated tests, all found by running them:** a `use-features` mock missing
+  `isFeatureOn` (page threw before rendering anything); an assertion on a computed "today's" rupee
+  total, which would fail by **calendar** rather than by regression; and a `team.directory`
+  assertion written against the **rep** tab set while mocking an admin — that page renders two
+  different tab sets by role (`if (!isManagerAdmin)`).
+- **Selecting a tablist by index silently asserted nothing** — the section header renders its own
+  tablist, so `getAllByRole("tablist")[0]` grabbed the wrong one. Now selected by content. Watch for
+  this whenever a page nests Tabs.
+- All three mutation-verified (blank `attrLine`, remove a tab, rename a KPI label → red).
+- Spacing widened on the three dense pairs (claims approve/reject, attendance prev/next, stock tabs)
+  from gap-1/gap-2 → gap-3 so they can later take `.hit-area-44` without overlapping. **Hit areas
+  deliberately NOT added yet** — that wants a real-device check first.
+- ⚠️ **Both aider agents silently did nothing on first launch**: the log redirect pointed at a
+  scratchpad path from an earlier session id, so the shell failed (`EXIT=1`) before aider ran.
+  `git status` was clean, which is the only reason it was caught. **Never assume a background
+  worker ran — check the diff, not the exit notification.**
+
 ### Phone bottom tab bar — BUILT (`3fa12f7`), live chunk `index-ib4fU0Dr.js`
 - The Stitch brief's bottom tab bar had never been built; mobile nav was a hamburger + slide-over.
   Now: Dashboard · Leads · Clients · Orders · **More**, `md:hidden`, fixed, `pb-safe`.
