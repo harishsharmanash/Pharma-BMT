@@ -6,7 +6,23 @@
 
 ## 2026-08-10 — Claude Opus (lead), DeepSeek V4 Flash (worker)
 
-### Detail routes finally got their design pass — SHIPPED to local commits, NOT PUSHED (`4934c81`)
+**PUSHED `204c721..b4e7ea7`. Migration applied by Harish and probe-verified. NOT YET DEPLOYED —
+`ship.sh` has not been run, so app.cerebyl.com is still on the old bundle.**
+
+### First route-render coverage in the repo (`b4e7ea7`)
+- `src/test/detail-routes.render.test.tsx` mounts the REAL components of all three detail routes
+  with stubbed edges (router / Supabase client / auth / permissions / features). The trick that makes
+  it possible: **mock `createFileRoute` to return the options object**, which reaches the component
+  without exporting internals from production files. Reusable for any other route.
+- Suite is now **364 tests / 31 files** (was 361/30).
+- **Verified sensitive by mutation** — renaming a section header turns it red, then green on revert.
+  Do this for any new test here: the repo already had a test file that silently never ran because it
+  sat outside the vitest `include` glob, so it "passed" by not existing.
+- Nice property worth keeping: the orders test asserts `INV-1001` appears **more than once**, because
+  the second match is the off-screen printable node html2canvas paints for the JPG export. The count
+  doubles as a guard on that node still rendering.
+
+### Detail routes finally got their design pass (`4934c81`)
 - `leads.$id` / `parties.$id` / `orders.$id` were the last un-restyled surfaces. Four aider tickets
   (G1 leads cleanup, G2 parties, G3 orders, G4 leads detail), run as two parallel pairs on disjoint
   file sets. Tickets at `Files/scratchpad/ticket-2026-08-10-G{1..4}-*.md`, built from a shared
@@ -24,9 +40,9 @@
   hoisted column definitions were untouched. **Never accept a design diff without checking what got
   simplified away.**
 - Gates: `tsc` 0, 361/361 vitest, `ship.sh --dry-run` green incl. the artifact assertion.
-  **Not visually verified** — all three routes are behind auth and I won't type a password into a
-  login form. Next lead: either build unauthenticated mock routes (the `/dev/leads` trick that got a
-  whole design approved in one round) or have Harish screenshot the live pages.
+  **Runtime-verified via the new render tests (see above), NOT visually verified** — nobody has
+  looked at these pages. The render tests prove they mount and keep their sections; they say nothing
+  about whether the design is right. Harish should eyeball them after the next deploy.
 
 ### Notification duplicate fixed — and CLAUDE.md's recommendation was BACKWARDS (`05238d9`)
 - One overdue follow-up buzzed the rep twice: `generate_due_notifications` section 4 (`followup_due`)
@@ -37,8 +53,10 @@
   an overdue fu1 and a future fu5 **silently never notified at all**. Dropped `lead_followup`.
   Migration `20260816120000` also revokes the PUBLIC/anon EXECUTE that `generate_due_notifications()`
   inherited (the 08-05 migration revoked its two siblings but missed it).
-- ⚠️ **Migration is NOT applied to the live DB** — needs Harish in the SQL Editor. Until then cron
-  still generates duplicates nightly; the frontend no longer calls it, so no worse than before.
+- ✅ **Migration APPLIED by Harish 10 Aug and probe-verified**: an anon PostgREST RPC to
+  `generate_due_notifications` now returns `401 / 42501 permission denied` where it previously
+  returned 200. That probe is the cheap way to confirm a grant change actually landed — use it
+  rather than trusting "the SQL ran".
 
 ### Audit found THREE doc claims that were stale (`61a95ca`) — the recurring failure mode
 - **Pack-size attributes**: listed as "specced, not started"; actually fully shipped and live —
