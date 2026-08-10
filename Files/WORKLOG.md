@@ -6,8 +6,37 @@
 
 ## 2026-08-10 — Claude Opus (lead), DeepSeek V4 Flash (worker)
 
-**PUSHED `204c721..b4e7ea7`. Migration applied by Harish and probe-verified. NOT YET DEPLOYED —
-`ship.sh` has not been run, so app.cerebyl.com is still on the old bundle.**
+**PUSHED and DEPLOYED — live chunk `index-B5x5ICP8.js`. Migration applied by Harish and
+probe-verified.**
+
+### Post-deploy visual pass + mobile audit (`d1b274e`)
+- Reviewed all three detail routes live in a logged-in browser. Three fixes shipped:
+  **(1)** the three detail pages rendered at three different widths (leads uncapped, parties
+  `max-w-5xl`, orders `max-w-6xl`) — all now full-width per the documented standard. The caps came
+  from `557eb26 "UI draft 3"`, NOT the design pass. **(2)** party info fields back to 3 columns on
+  `lg` (10 mostly-blank cards in 2 columns was a full screen of scrolling before the tabs; now
+  3-3-3-1, grid height 545px → 327px). **(3)** sign-in button 36px → 44px, verified at a real 375px
+  viewport. `components/ui/button.tsx` deliberately untouched — resizing it ripples app-wide.
+- **Mobile audit found nothing else broken.** No page-level horizontal overflow on any detail route;
+  the 13-column invoice table scrolls inside its own `overflow-auto` wrapper (979px in a 578px
+  container); the party tab strip scrolls rather than clipping.
+- **Two traps worth recording for whoever audits mobile next:**
+  1. **Chrome's window minimum is ~614 CSS px here**, so `resize_window` cannot reach a phone
+     viewport, and raising element `zoom` does NOT help — Tailwind breakpoints are viewport media
+     queries and ignore element zoom. For a true 375px test use the in-app Browser pane
+     (`preview_start` + `resize_window` mobile preset) against `npm run dev`. That only reaches
+     unauthenticated pages (`/auth`, `/legal/*`); authenticated pages were audited at 614px, which
+     is below `md` so the mobile branch is genuinely active.
+  2. **`/dev/leads` is a desktop-only mock** (hardcoded `ml-64` sidebar). It reports ~140 overflow
+     offenders at 375px which are artifacts of the mock, not app bugs. Do not audit mobile with it.
+- **A "slow fade-in" I reported earlier was MY OWN measurement artifact, not a bug.** Pages looked
+  washed-out for seconds in screenshots because the Chrome tab was not being composited (the same
+  reason `screencapture` returned only wallpaper). Measured properly, opacity reaches 1 in **207ms**.
+  Lesson: before filing a perf bug from screenshots, confirm the tab is actually visible —
+  `document.visibilityState` and a timed `getComputedStyle` sample cost one call and settle it.
+- Known gap, NOT a regression: the phone **bottom tab bar** in the Stitch brief was never built —
+  mobile nav is a hamburger + slide-over (`md:hidden`) in `app-shell.tsx`. Real design decision to
+  make, not a bug to fix silently.
 
 ### First route-render coverage in the repo (`b4e7ea7`)
 - `src/test/detail-routes.render.test.tsx` mounts the REAL components of all three detail routes
