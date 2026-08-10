@@ -17,3 +17,6 @@ acrowell-ai-worker/
 
 # Large reference media — stays on Google Drive, not in git (365 MB of inspiration videos/zips)
 Files/App UI inspirations/
+
+# Local editor prefs
+.vscode/
