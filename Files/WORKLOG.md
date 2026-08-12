@@ -4,6 +4,45 @@
 
 ---
 
+## 2026-08-12 (morning) — Kimi K3 (lead)
+
+**F6 scheme engine: a/b/c/d/e all coded and shipped. Two migrations APPLIED mid-flight (offer_rules ✓ by Harish; order_request_schemes pending → portal-data deploy HELD until then).**
+
+- **F6-a `1e76703`:** `scheme-rules.ts` pure engine — qty_free (X+Y, floor
+  semantics), percent with min_qty/min_value gates, qty/value slabs (highest
+  qualifying wins), scope global/party_type/party. Rules: schemes NEVER reduce
+  what a human typed, never touch the rate (party rate cards keep primacy),
+  two percent schemes don't stack (better wins), free+percent coexist.
+  25 tests, 6 mutants killed — TWO test weaknesses found by mutation testing
+  (a perl pattern that never matched = phantom survivor, and a single-element
+  sort test; both fixed). Migration `20260830120000_offer_rules.sql`.
+- **F6-b `8edcb14`, live `index-Dn_Muvw-.js`:** order form Schemes panel —
+  live nudges ("Add 5 more of X to unlock 10+2"), Apply-schemes button,
+  scheme names locked to `orders.scheme_applied`. ⚠️ **Process slip: this
+  commit accidentally included the unapplied migration (`git add -A`).**
+  Harish applied it immediately after; no drift remains. Rule reinforced:
+  explicit add paths only, never -A, while a pending migration sits in tree.
+- **F6-d `56f8c8f`, live `index-WQUlnX2L.js`:** offer editor rule UI (type,
+  scope, params incl. slab rows). Client-side guard: qty_free requires a
+  product (mirrors the DB CHECK offers_rule_sane).
+- **F6-c `6648d04`, live `index-lfdopHAx.js`:** portal submit_request computes
+  schemes SERVER-SIDE in portal-data (mirrored engine, byte-identity guard
+  test for all 7 functions — same pattern as allocateFifo). Request items
+  carry qty_free/disc_pct; order_requests.scheme_summary; accept flow maps
+  them into the order untouched + scheme_applied. Fixed a real bug mid-write:
+  scheme results keyed by product_id collapsed duplicate-product cart lines —
+  now index-aligned. **Deploy of portal-data HELD until
+  `20260831120000_order_request_schemes.sql` is applied** (inserts reference
+  the new columns). First wrangler deploy attempt hit a transient Cloudflare
+  auth 500; retry succeeded — don't panic-revert on that error, just retry.
+- **F6-e (shipping):** portal-offers edge fn now party-filters scoped offers
+  SERVER-SIDE (a distributor must never receive another party's rule payload)
+  and returns rule_type/rule_params; product page shows "With 10+2: effective
+  ₹83.33/unit" via `bestSchemeRate` (5 tests, 3 mutants killed).
+- F6 remaining: portal cart nudge UI (c2, minor), then F10 predictive reorder.
+
+---
+
 ## 2026-08-11 (late night) — Kimi K3 (lead)
 
 **Batch 2A CLOSED. F3 objection library shipped; F14-a + F4d + F3 migrations all applied by Harish and probe-verified. Webhook trigger `notifications-push` confirmed live on `notifications`.**
