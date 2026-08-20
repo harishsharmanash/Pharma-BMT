@@ -396,3 +396,118 @@ sibling function `purge_trashed_rows` got both lines. Result: the Activity Log's
 retention had **never run once** since it shipped — and nothing surfaced it. Reading the code did
 not find it; firing the job and reading the response did. **When a scheduled job is "set up",
 fire it once and read the body, every time.**
+
+---
+---
+
+# ROUND 3 — WhatsApp Business Platform setup, added 12 Aug 2026
+
+Full design in `Files/CEREBYL-BUILD-PLAN.md` / the WhatsApp integration plan. Short version: we're
+becoming a **Meta Tech Provider** so companies connect their WhatsApp number through our console
+the same way custom domains work — a popup, not a support ticket. Meta's own approval queue is
+the slow part, so **start this now** — the build proceeds in parallel and doesn't need it finished
+until Phase 2 (the console wizard needs a real `config_id`, and live traffic needs App Review).
+
+None of this costs money to start. Only Task 15 (WABA payment method) needs a card, and only once
+a real client is being messaged — not for building/testing.
+
+## TASK 12 — Create the Meta Business-type app  ⏱️ 15 min  🔴 do first
+
+**Why:** everything else in this round hangs off this one app. It has to be created as a
+**Business** type app specifically — a standard app can't do Embedded Signup.
+
+1. Go to **https://developers.facebook.com/apps**
+2. Sign in with the account tied to the **Enthrella/Cerebyl Meta Business Manager** (if you don't
+   know which login that is, check whichever account manages the `cerebyl.com` / `enthrella.com`
+   Meta Business assets — WhatsApp Ads, if any, would already live there).
+3. **Create App** → when asked what type, choose **Business**.
+4. Name it something recognizable, e.g. `Cerebyl WhatsApp`.
+5. On the app dashboard, **Add Product** → find **WhatsApp** → **Set up**.
+6. It will ask to associate the app with a **Business Portfolio** (Meta's newer name for Business
+   Manager) — pick the Enthrella one, or create one if none exists yet.
+
+**Report back:** the App ID (visible on the dashboard, not secret) and which Business Portfolio
+it's linked to.
+
+> **DONE 12 Aug 2026.** App name `CerebylWA`, App ID `2295685677930179`, Business Portfolio
+> "Cerebyl" (dedicated — not the existing Enthrella ad-management one, by design: keeps the
+> WhatsApp Tech Provider's blast radius separate from client ad-account access, and makes a future
+> Cerebyl-as-its-own-brand spinoff cleaner). Sole admin is a real risk (a Meta-side ban/restriction
+> on that one account would lock out the portfolio, app, and eventually every client WABA) — a
+> second admin, ideally a genuinely separate person's Facebook account, is a TODO before this goes
+> live with real clients. Next click in the dashboard: "Become a Tech Provider".
+
+---
+
+## TASK 13 — Complete Business Verification  ⏱️ 20 min + Meta's review time (days–weeks)  🔴
+
+**Why:** Meta will not let an unverified business send template/marketing messages at any
+meaningful volume, and Embedded Signup for other companies requires it too. This is the single
+slowest step in the whole WhatsApp rollout — start it today regardless of anything else.
+
+1. In the same Business Portfolio → **Business Settings** (gear icon) → **Business Info** →
+   **Start Verification** (or **Security Center → Business verification**).
+2. You'll need: legal business name and address matching official documents, a business phone
+   number Meta can call/text to verify, and one of — GST certificate, company registration
+   (Udyam/MSME, CIN, etc.), or a business bank statement/utility bill with the business name.
+3. Submit and wait. Meta emails you the outcome; there's no useful way to speed this up.
+
+**Report back:** submitted (yes/no), and later, approved/rejected + date.
+
+---
+
+## TASK 14 — Configure Embedded Signup + request permissions  ⏱️ 20 min, needs Task 12 done  🟠
+
+**Why:** this produces the `config_id` the console "Connect WhatsApp" button needs, and requests
+the two permissions (`whatsapp_business_management`, `whatsapp_business_messaging`) that let our
+app manage a client's WABA on their behalf after they click through the popup.
+
+1. App dashboard → **WhatsApp → Configuration** (or **Embedded Signup** under WhatsApp product
+   settings — Meta renames this occasionally; look for "Embedded Signup" or "Signup flow").
+2. Create a new signup configuration. It'll ask what features to expose to the client during
+   signup (WABA creation, phone number, etc.) — leave defaults unless something looks obviously
+   wrong; I'll adjust from our side of the build if needed.
+3. Copy the **Configuration ID** it generates.
+4. Go to **App Review → Permissions and Features**, find `whatsapp_business_management` and
+   `whatsapp_business_messaging`, and click **Request Advanced Access** for both. This is
+   different from Task 13 (business verification) — it's an app-capability review, and Meta
+   usually asks for a short screen-recording of the intended use, which I'll help script once the
+   console wizard exists (Phase 2 of the build).
+
+**Report back:** the Configuration ID (not secret, safe to paste in chat).
+
+---
+
+## TASK 15 — Generate the platform System User access token  ⏱️ 15 min, needs Task 12 done  🔴 treat as a real secret
+
+**Why:** unlike a normal API key, this ONE token lets our app act on behalf of every client WABA
+we onboard — it is the single most sensitive credential in this whole feature, equivalent in
+blast radius to the Supabase service-role key. It goes straight into a Cloudflare Worker secret,
+never into chat, never into a file in this Drive folder.
+
+1. Business Portfolio → **Business Settings → Users → System Users**.
+2. **Add** → name it e.g. `cerebyl-whatsapp-platform` → role **Admin** (needed to manage assets
+   this app will be granted access to).
+3. **Assign assets**: link it to the app created in Task 12 with **Full control**.
+4. Click **Generate New Token** → select the app from Task 12 → tick
+   `whatsapp_business_management` and `whatsapp_business_messaging` → set expiration to
+   **Never** (System User tokens support this, unlike normal user tokens) → **Generate Token**.
+5. Meta shows the token **once**. Copy it somewhere temporary and secure (a password manager
+   entry, not a chat message or a plain file) — I'll ask you to paste it directly into the
+   Cloudflare Worker secret store (`wrangler secret put`) when Phase 1 of the build reaches that
+   step, at which point it never needs to be visible in chat at all.
+
+**Report back:** "done" — not the token itself.
+
+---
+
+## What I do once you've done these
+
+- **Task 12 + 14** → build the console "Connect WhatsApp" wizard against the real `config_id`.
+- **Task 13** → once approved, raise the Embedded Signup onboarding cap from 10 to 200
+  companies/week automatically; before approval we can still test with our own number.
+- **Task 15** → wire the token into `cerebyl-whatsapp-worker` as a secret, never committed,
+  never logged.
+
+Meta also gives **free test phone numbers** before Business Verification finishes — I'll use one
+of those to build and verify Phases 2–3 (webhook → lead → bot reply) without waiting on Task 13.

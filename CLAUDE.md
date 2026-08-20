@@ -75,6 +75,54 @@ Read narrowly (use the §6 file map, no blind grepping) · don't re-derive conte
 
 **Your own budget (lead agent — Kimi or Claude):** think at low/medium effort matched to the task — low for routine tickets/reviews, medium for planning and debugging. Review via `git diff` rather than reopening files the worker already reported on. Your subscription quota is the scarcest resource on the team.
 
+### The 95/5 split — Harish's standing instruction (10 Aug 2026)
+
+**"I only want your involvement in 5% of the work, which is only and only planning. Everything else
+should be done through DeepSeek."** That is the rule. The lead's 5% is: planning, ticket authoring,
+diff review, migrations, deploys, and live verification. The worker's 95% is all implementation.
+
+**What the lead still never delegates** (this is the quality floor, and the 95% target does not
+override it — it is *inside* the 5%): reviewing the worker's diff · architecture and schema/RLS
+design · AI prompt changes · applying migrations · live-infra debugging · **running the verification
+gates and the mutation check.**
+
+**Verified over ~12 tickets on 10 Aug 2026: DeepSeek's engineering substance is reliable; its
+self-verification is not.** It got the GST back-out from an inclusive MRP, a three-stage comparator,
+three sets of RLS policies, and hold semantics right first time. Every repeated defect was in
+checking its own work. **Budget one correction round-trip per UI ticket and never commit without
+running the mutation yourself.** Escalate a single ticket to a stronger model only when (a) it has
+failed twice on DeepSeek, (b) the design cannot be fully specified in the ticket up front, or
+(c) a wrong answer would pass every gate undetected.
+
+### Harness rules for aider + DeepSeek — each of these cost a wasted run
+
+1. **Keep every `--file` / `--read` path INSIDE `leadenthrella/`.** Passing a path from `Files/` makes
+   aider bind to the PARENT git repo; its repo-map then holds 235 non-source files and it can only
+   see what you explicitly passed. The reusable preamble therefore lives at
+   `leadenthrella/.claude/TICKET-PREAMBLE.md`.
+2. **Never ask DeepSeek for `path:line` evidence.** It never sees line numbers; it will burn an entire
+   run trying to count them and then write nothing. Ask for a verbatim code quote + path.
+3. **Aider cannot edit a zero-byte file** — seed any new report/target file with a placeholder line.
+4. **`--no-suggest-shell-commands` means the worker CANNOT run `tsc` or the tests.** Its
+   "verification" is therefore speculation. Say so in the ticket ("do not claim to have run them")
+   and run the gates yourself. This inverts §2's "never re-run a verification the worker already
+   ran" — with this flag, there is no verification to re-run.
+5. **Tickets must say "do not commit."** Parallel agents share one checkout, so a commit from one
+   sweeps up another's work. The lead commits after review.
+6. **Keep migration tickets SMALL.** Aider's edit format degrades on long SQL files — it hit its
+   3-reflection limit twice on a 100-line migration and silently corrupted an `ON CONFLICT`
+   predicate.
+7. **Mutation-test every new test before committing.** Two suites this session passed while the
+   behaviour under test was deleted, because the fixtures happened to agree with a fallback rule.
+   For a comparator with fallback stages, a test for stage N must be built so every *later* stage
+   gives the wrong answer.
+
+Runner script pattern (the API key lives in `~/.zshrc`, interactive-only, so a bash shell will not
+see it — extract it rather than sourcing zsh):
+```bash
+KEY=$(sed -n 's/^export DEEPSEEK_API_KEY=//p' ~/.zshrc | head -1 | tr -d "\"'")
+```
+
 ### Ticket pattern that works
 
 1. **Recon with the script, not by reading files** (see below).
@@ -197,6 +245,7 @@ If even one item is uncertain, the correct move is the cheap one: commit locally
 
 - Dashboard "Leads by Source" is a **bar chart, never a pie**.
 - **Default sort is alphabetical everywhere.** Any other order (highest dues, best-sellers) is an explicit opt-in only.
+  - **Documented exception — the LEADS list defaults to newest-received-first** (Harish, 10 Aug 2026, and the build spec's F18). Sort key is **`date_received`**, not `created_at`: leads arrive via the email-intake worker and are bulk-imported, so row-insert time is not arrival time. `useLeads()` already fetches in that order. Do not "fix" the leads list to alphabetical.
 - **Reassigning a party's rep = managers/admins only.** Reps never see that control.
 - **Reps only ever see their own data** (enforced by RLS).
 - Include these constraints in worker tickets whenever the ticket touches related code.

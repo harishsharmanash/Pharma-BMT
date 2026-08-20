@@ -55,6 +55,10 @@ interface FetchResponse {
 	arrayBuffer(): Promise<ArrayBuffer>;
 }
 
+interface Headers {
+	get(name: string): string | null;
+}
+
 declare class Response {
 	constructor(body?: BodyInit | null, init?: unknown);
 	arrayBuffer(): Promise<ArrayBuffer>;

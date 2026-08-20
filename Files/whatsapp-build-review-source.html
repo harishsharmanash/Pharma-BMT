@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cerebyl WhatsApp — Build Review & Feature Plan</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10.2pt; line-height: 1.55; color: #1a1a1a; margin: 0;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  h1 { font-size: 23pt; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 15pt; margin: 30px 0 10px; padding-bottom: 6px;
+    border-bottom: 2px solid #111; letter-spacing: -0.01em;
+    break-after: avoid; page-break-after: avoid;
+  }
+  h3 { font-size: 11.6pt; margin: 20px 0 6px; break-after: avoid; page-break-after: avoid; }
+  h4 { font-size: 10.4pt; margin: 14px 0 4px; break-after: avoid; page-break-after: avoid; }
+  p { margin: 0 0 9px; }
+  ul, ol { margin: 0 0 10px; padding-left: 19px; }
+  li { margin-bottom: 4px; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.6pt;
+         background: #f0f0f2; padding: 1px 4px; border-radius: 3px; color: #b3105c; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 9pt; }
+  th { background: #1a1a1a; color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; }
+  td { border-bottom: 1px solid #e2e2e6; padding: 6px 8px; vertical-align: top; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  .cover { padding-top: 42mm; text-align: left; break-after: page; page-break-after: always; }
+  .cover .sub { font-size: 13pt; color: #555; margin: 10px 0 34px; font-weight: 400; }
+  .cover .meta { font-size: 9.5pt; color: #666; border-top: 1px solid #ccc; padding-top: 14px; }
+  .cover .rule { height: 5px; background: #111; width: 62px; margin-bottom: 22px; }
+  .kicker { font-size: 8.6pt; letter-spacing: 0.14em; text-transform: uppercase;
+            color: #777; font-weight: 700; margin-bottom: 8px; }
+  .box { border: 1px solid #d8d8dd; border-left: 4px solid #111; background: #fafafb;
+         padding: 11px 14px; margin: 12px 0; break-inside: avoid; page-break-inside: avoid; }
+  .box.red    { border-left-color: #c0392b; background: #fdf3f2; }
+  .box.orange { border-left-color: #d17a11; background: #fdf8ef; }
+  .box.green  { border-left-color: #1e7a46; background: #f1f9f4; }
+  .box.blue   { border-left-color: #1f5fa8; background: #f1f6fc; }
+  .box h4 { margin-top: 0; }
+  .tag { display: inline-block; font-size: 7.6pt; font-weight: 700; letter-spacing: 0.06em;
+         padding: 2px 7px; border-radius: 3px; color: #fff; vertical-align: 2px; margin-right: 7px; }
+  .t-crit { background: #c0392b; } .t-high { background: #d17a11; }
+  .t-med  { background: #9a7d1e; } .t-ok   { background: #1e7a46; }
+  .t-new  { background: #1f5fa8; }
+  .pagebreak { break-before: page; page-break-before: always; }
+  .lead { font-size: 11pt; color: #333; }
+  .small { font-size: 8.8pt; color: #666; }
+  .num { font-weight: 700; color: #888; margin-right: 6px; }
+  .flow { font-family: "SF Mono", Menlo, monospace; font-size: 8.4pt; background: #f6f6f8;
+          border: 1px solid #e0e0e5; padding: 11px 13px; margin: 10px 0; white-space: pre;
+          line-height: 1.5; break-inside: avoid; page-break-inside: avoid; overflow: hidden; }
+  .toc li { margin-bottom: 5px; }
+  .verdict { font-weight: 700; }
+  .quote { border-left: 3px solid #bbb; padding-left: 12px; color: #444; font-style: italic;
+           margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="rule"></div>
+  <div class="kicker">Cerebyl · Internal Engineering Review</div>
+  <h1>WhatsApp Integration:<br>Build Review &amp; Feature Plan</h1>
+  <div class="sub">What we have built, what is actually working, what is quietly broken,<br>and how WhatsApp should connect to the rest of the app.</div>
+  <div class="meta">
+    <strong>Prepared for:</strong> Harish Sharma<br>
+    <strong>Date:</strong> 16 August 2026 · <em>revision 2 — adds Part 5 (owner controls &amp; rep access)</em><br>
+    <strong>Method:</strong> Full read of <code>cerebyl-whatsapp-worker</code> (13 files),
+    6 Supabase edge functions, 6 migrations, and the <code>/whatsapp</code> app surface
+    (1,767-line route + 7 components). No code was modified.<br>
+    <strong>Policy basis:</strong> Meta WhatsApp Business Platform &amp; Commerce Policy, India 2026 pricing.
+  </div>
+</div>
+
+<h2>Contents</h2>
+<ol class="toc">
+  <li><strong>Part 1 — What we have built, explained simply.</strong> Every moving part in plain language.</li>
+  <li><strong>Part 2 — The health check.</strong> What is correct, and 15 things that are wrong, ranked.</li>
+  <li><strong>Part 3 — How WhatsApp should connect to the app.</strong> The architecture and the reasoning.</li>
+  <li><strong>Part 4 — New features.</strong> What to build, why it matters, and what it costs.</li>
+  <li><strong>Part 5 — Company controls &amp; rep access.</strong> The owner's switchboard and the rep permission model.</li>
+  <li><strong>Part 6 — The order to build in.</strong></li>
+</ol>
+
+<div class="box blue">
+<h4>The one-paragraph summary</h4>
+<p>The engineering underneath this integration is genuinely good — the webhook security, the
+duplicate-message handling, the race conditions, the fallback chains and the MRP-only discipline are
+all done properly, better than most commercial WhatsApp tools. <strong>The problem is at the two
+edges: the dashboards and the compliance boundary.</strong> Three screens report information they do
+not actually have (number health, delivery stats, the AI knowledge base), and three compliance
+mechanisms have holes that could cost a client their WhatsApp number. None of it is hard to fix. All
+of it should be fixed before a second client is onboarded.</p>
+</div>
+
+<div class="pagebreak"></div>
+<h2>Part 1 — What we have built, explained simply</h2>
+
+<p class="lead">There are three separate programs involved, running in three different places. Most
+confusion about this system comes from not knowing which one does what.</p>
+
+<div class="flow">CUSTOMER'S PHONE
+      |
+      v
+  META / WHATSAPP  ------------------------------.
+      |                                          |
+      | (1) "someone messaged you"               | (5) "send this message"
+      v                                          |
+  THE WORKER  (cerebyl-whatsapp-worker)          |
+  always-on listener + the AI bot                |
+      |                                          |
+      | (2) writes what happened                 |
+      v                                          |
+  THE DATABASE  (Supabase)  <--- (4) reads ------'
+  leads, conversations, messages, templates      ^
+      |                                          |
+      | (3) shows it live                        | (4) rep hits Send
+      v                                          |
+  THE APP  (app.cerebyl.com  ->  /whatsapp) -----'</div>
+
+<h3>1. The Worker — the part that never sleeps</h3>
+<p>A small program living on Cloudflare's network. Meta needs somewhere to deliver messages the
+instant they arrive, 24/7, and a website cannot do that (a website only runs when someone opens it).
+The Worker is that always-on address. It does four jobs:</p>
+<ul>
+  <li><strong>It checks the message is really from Meta.</strong> Every incoming message carries a
+  cryptographic signature. We verify it before reading a single word — so nobody can fake a customer
+  message into your CRM. <span class="small">(This is done correctly.)</span></li>
+  <li><strong>It turns a message into a lead.</strong> New number writes in → the Worker creates a
+  conversation, creates a lead, assigns a rep by round-robin, and logs the message. The rep gets a
+  notification through the normal app pipeline — no separate alert system was needed.</li>
+  <li><strong>It runs the AI bot.</strong> Reads the conversation, the lead record and the company's
+  product catalogue, then replies as a salesperson.</li>
+  <li><strong>It records delivery ticks.</strong> Meta tells us sent → delivered → read; the Worker
+  files those against the message.</li>
+</ul>
+
+<h3>2. The bot's brain, in plain terms</h3>
+<p>The bot is Google's Gemini model, given a personality, a memory, and exactly four buttons it can
+press. The four buttons are the important part — <strong>the bot physically cannot do anything
+outside them</strong>, no matter what a customer asks or how they phrase it.</p>
+
+<table>
+<tr><th style="width:30%">The button</th><th>What it does</th></tr>
+<tr><td><code>update_lead_details</code></td><td>Writes what it learned into the lead record — name,
+firm, profession, city, state, DL/GST status, and free-text notes that accumulate rather than
+overwrite.</td></tr>
+<tr><td><code>share_product_list</code></td><td>Asks a separate program to build a branded PDF
+catalogue and sends it as a document. <strong>MRP only</strong> — trade rates, PTS and PTR are never
+even loaded into the bot's memory, so it cannot leak them by accident.</td></tr>
+<tr><td><code>share_product_images</code></td><td>Sends up to 3 product photos with MRP captions.
+Honestly reports back which products had no photo, so it doesn't invent one.</td></tr>
+<tr><td><code>mark_ready_for_handoff</code></td><td>Says "a rep will call you", then steps back.</td></tr>
+</table>
+
+<p>Its instructions tell it to text like a real salesperson: one or two lines, never a paragraph;
+acknowledge before acting ("ok", "hanji", "theek hai"); ask for the customer's preferred language on
+the first message and stay in it; and a <strong>two-strike rule</strong> — ask for any missing detail
+at most twice, then drop it gracefully rather than nagging. It can genuinely see photos, hear voice
+notes and read PDFs.</p>
+
+<h3>3. The app — the five tabs on <code>/whatsapp</code></h3>
+<table>
+<tr><th style="width:22%">Tab</th><th>What it is for</th><th style="width:20%">State</th></tr>
+<tr><td><strong>Inbox</strong></td><td>Live chat threads, updating in real time. Shows a countdown
+of the 24-hour free-reply window, lets a human take over from the bot, and attach files.</td>
+<td class="verdict">Working well</td></tr>
+<tr><td><strong>Templates</strong></td><td>Write a pre-approved message, submit it to Meta, check if
+it was approved. Has an AI generator that writes the template for you from a plain-Hindi
+prompt.</td><td class="verdict">Working, with gaps</td></tr>
+<tr><td><strong>Broadcasts</strong></td><td>Send an approved template to many leads or parties at
+once.</td><td class="verdict">Works, but reports false numbers</td></tr>
+<tr><td><strong>Knowledge</strong></td><td>Teach the bot your company's schemes and policies.</td>
+<td class="verdict">Not connected to the bot</td></tr>
+<tr><td><strong>Health</strong></td><td>Show the number's quality rating and sending tier.</td>
+<td class="verdict">Shows fixed placeholder values</td></tr>
+</table>
+
+<h3>4. The two rules Meta enforces, which shape everything</h3>
+<div class="box">
+<p><strong>The 24-hour window.</strong> When a customer messages you, a 24-hour window opens in which
+you can reply with anything — free text, photos, PDFs. Once it closes, you may only send a
+<em>pre-approved template</em>. This is why templates exist at all, and why the Inbox shows a
+countdown. The app enforces this on the server, not just in the interface. That is correct.</p>
+<p style="margin-bottom:0"><strong>Cost, India 2026.</strong> Marketing message ≈ <strong>₹0.88</strong>.
+Utility message (order dispatched, payment due) ≈ <strong>₹0.115</strong>. That is a <strong>7.6×
+difference</strong> for what is often the same sentence in a different category. Getting the category
+right is not paperwork — it is the difference between a ₹1,000 and a ₹7,600 monthly bill. Note also
+that free in-window replies <strong>stop being free on 1 October 2026</strong>.</p>
+</div>
+
+<div class="pagebreak"></div>
+<h2>Part 2 — The health check</h2>
+
+<h3>First, what is genuinely well built</h3>
+<p>This deserves saying plainly, because the list of problems below is long and would give a false
+impression on its own. The following are done to a standard I would not expect at this stage:</p>
+<ul>
+  <li><strong>Webhook signature verification</strong> before the payload is parsed — no forged
+  messages.</li>
+  <li><strong>Duplicate protection.</strong> Meta delivers the same message twice by design. A
+  unique database index makes the second copy fail, and the code swallows that failure quietly. Without
+  this, <em>every customer would get every bot reply twice.</em></li>
+  <li><strong>The two-messages-at-once race is handled.</strong> If a new customer sends two messages
+  in the same second, both could create a conversation. A partial unique index makes the loser fail,
+  and the code re-fetches the winner's row instead of creating a duplicate thread.</li>
+  <li><strong>Delivery ticks only ever move forwards.</strong> Meta's callbacks arrive out of order;
+  the code refuses to downgrade "read" back to "sent", and treats "failed" as permanent.</li>
+  <li><strong>MRP discipline is structural, not hopeful.</strong> The catalogue given to the AI only
+  ever contains the MRP column. There is no path by which a trade rate could be spoken, even if the
+  model tried.</li>
+  <li><strong>The AI's category answers are validated</strong> against the exact list the database
+  allows, so the bot cannot write a value that silently fails.</li>
+  <li><strong>The customer is never left in silence.</strong> Cached prompt → plain prompt → retry →
+  and finally a safe generic holding message. Four layers deep.</li>
+  <li><strong>Handoff only commits if the message actually sent.</strong> A failed send leaves the
+  conversation with the bot so the next message retries, rather than stranding the customer.</li>
+  <li><strong>Permissions are tight.</strong> Column-level database grants (a rep can flip a status
+  but cannot rewrite who owns a conversation), and reps only see their own threads.</li>
+</ul>
+
+<h3>Now the problems, ranked</h3>
+
+<h4><span class="tag t-crit">CRITICAL</span> 1. The Health tab is decorative — it shows green no matter what</h4>
+<p><strong>In plain terms:</strong> the screen that is supposed to warn you that a client's WhatsApp
+number is in trouble is not connected to anything. It displays "GREEN" and "TIER_1K" as fixed text.
+Nothing in the entire system ever asks Meta what the real quality rating is, and nothing ever writes
+it to the database — the column exists and is permanently empty.</p>
+<p><strong>Why it is worse than having no screen at all:</strong> on the day a client's number goes
+Red and their messages stop reaching customers, this panel will still say everything is fine. You
+would find out from an angry phone call. <em>A dashboard that cannot be wrong is not a dashboard.</em></p>
+
+<h4><span class="tag t-crit">CRITICAL</span> 2. The AI Knowledge Base does not reach the bot</h4>
+<p><strong>In plain terms:</strong> a company admin fills in their schemes, territory policy and
+sales rules, clicks Save, and gets a confirmation reading <em>"Bot will now answer prospective
+distributors according to your updated company policies."</em> The bot never reads any of it. The
+text is saved into a settings field that the bot does not load — it only pulls address, phone, email
+and website.</p>
+<p>So the feature looks complete, tells the user it worked, and changes nothing about how the bot
+behaves. This is the most misleading thing in the build.</p>
+
+<h4><span class="tag t-crit">CRITICAL</span> 3. "STOP" is ignored once the bot has handed off</h4>
+<p><strong>In plain terms:</strong> the code that catches a customer typing STOP or UNSUBSCRIBE sits
+<em>after</em> the check that makes the bot go quiet post-handoff. Since handoff is the goal of
+nearly every conversation, this means: <strong>for most customers, replying STOP does nothing.</strong>
+No opt-out is recorded, no confirmation is sent, and they stay in every future broadcast.</p>
+<p><strong>Why it matters beyond politeness:</strong> honouring opt-out is a Meta requirement and an
+Indian DPDP requirement. Repeated ignored opt-outs are exactly what drives a number's quality rating
+down and gets a WhatsApp Business account suspended.</p>
+
+<h4><span class="tag t-crit">CRITICAL</span> 4. Broadcast reports "delivered" for messages it merely handed over</h4>
+<p><strong>In plain terms:</strong> when the broadcast sends a message and Meta replies "OK, I've got
+it", we record that recipient as <strong>delivered</strong>. But "OK, I've got it" is not delivery —
+it means accepted for delivery. The phone may be off, the number may be invalid, the customer may
+have blocked you.</p>
+<p>Worse, nothing ever updates those rows afterwards. Real delivery confirmations arrive later by
+webhook, but the code that handles them only looks at the inbox message table — and broadcast
+messages are never written there. So <strong>campaign statistics will read close to 100% delivered,
+permanently, regardless of reality</strong>, and broadcast messages are invisible in the Inbox.</p>
+
+<h4><span class="tag t-crit">CRITICAL</span> 5. Broadcasts silently stop at 500 recipients</h4>
+<p><strong>In plain terms:</strong> the audience query has a hard cap of 500 rows and no paging. A
+company with 900 distributors sends to 500 of them, and the report says "targeted: 500" — so it looks
+correct. Nobody would ever notice.</p>
+<p>This is exactly the failure mode <code>fetch-all.ts</code> was written to eliminate everywhere else
+in the app. That safeguard was never applied here.</p>
+
+<h4><span class="tag t-high">HIGH</span> 6. Seven places send WhatsApp messages; only one checks opt-outs</h4>
+<p><strong>In plain terms:</strong> messages leave through seven different pieces of code across three
+codebases. Each one has its own opinion about the rules. Only the broadcast sender checks whether the
+customer has opted out — <strong>a rep replying by hand, and the bot itself, will happily message
+someone who said STOP.</strong></p>
+<p>This is the root cause of several other items on this list, and the strongest argument for the
+architecture change in Part 3.</p>
+
+<h4><span class="tag t-high">HIGH</span> 7. Meta never tells us when a template is approved</h4>
+<p>Meta pushes template approvals, rejections and quality warnings to a webhook. We only subscribe to
+messages and delivery ticks. So an approval only appears when a human opens the Templates tab and
+clicks Refresh on that one template. And <strong>template quality warnings — the ones that precede a
+template being permanently disabled — are invisible to us entirely.</strong></p>
+<p class="small">Meta's pause ladder: first low-quality strike = 3 hours paused, second = 6 hours,
+third = permanently disabled. We currently cannot see any of the three.</p>
+
+<h4><span class="tag t-high">HIGH</span> 8. Anyone on the internet can spend our AI budget</h4>
+<p>The Worker's template-generator endpoint has no authentication and accepts requests from any
+origin. It runs on the <em>platform</em> Gemini key — our money, not the client's. Anyone who
+discovers the URL can generate unlimited templates at our expense.</p>
+
+<h4><span class="tag t-high">HIGH</span> 9. There is no opt-<em>in</em> record at all</h4>
+<p>We track who opted <em>out</em>. We have nothing recording who ever agreed to receive marketing.
+Meta requires demonstrable opt-in for marketing messages; DPDP requires recorded consent with its
+source. Today, <strong>every lead and party in the database is treated as broadcastable by
+default</strong> — including a number scraped from a directory or typed in by a rep.</p>
+<p>Related: opt-out records can be <em>deleted</em> by any manager, because the permission rule grants
+full control rather than insert-and-read. A record of someone withdrawing consent should not be
+erasable.</p>
+
+<h4><span class="tag t-high">HIGH</span> 10. Your existing customers are treated as strangers</h4>
+<p><strong>In plain terms:</strong> when an inbound message arrives, we look for a matching
+<em>lead</em>. We never look for a matching <em>party</em> (an actual customer). So a distributor you
+have been invoicing for two years messages the company number, and the system creates a brand-new
+lead, round-robins it to whichever rep is next, and the bot opens with <em>"May I know your good
+name?"</em></p>
+<p>The database even has the field to link a conversation to a party. Nothing ever fills it in. For a
+PCD business where the same distributors message constantly, this is the single most visible product
+flaw on the list.</p>
+
+<h4><span class="tag t-high">HIGH</span> 11. Broadcasts ignore Meta's speed and frequency limits</h4>
+<p>The sender fires roughly 50 messages per second and never asks what the number's tier allows. It
+records failures but does not slow down or stop when it starts hitting Meta's per-user frequency cap
+(a business may send only about <strong>2 marketing messages per person per 24 hours</strong> unless
+they reply). Hammering through those errors is precisely how a quality rating collapses.</p>
+
+<h4><span class="tag t-high">HIGH</span> 12. Two copies of the template-writing AI, already drifting</h4>
+<p>The same system prompt exists in the Worker and again inside the edge function, written out
+separately. They are already slightly different. This project has been bitten by duplicated logic
+three times before — the fallback in one of them is the next item.</p>
+
+<h4><span class="tag t-high">HIGH</span> 13. The emergency fallback template makes claims on your behalf</h4>
+<p>When the AI generator fails, a hardcoded template is used instead. Its text promises a
+<em>"DCGI approved price list"</em> and a <em>"15% margin"</em>. That fires unattended, for whichever
+company happens to be using it, asserting a regulatory approval and a commercial term that may be
+untrue. A fallback should be bland, not confident.</p>
+
+<h4><span class="tag t-med">MEDIUM</span> 14. Products are capped at 400 and cached for an hour</h4>
+<p>The bot loads at most 400 products. A company with 600 has 200 products the bot has never heard
+of, and will say so to a customer. Separately, the catalogue is cached for one hour with no way to
+clear it — <strong>so a price correction can take up to an hour to reach a live conversation.</strong>
+This is the same caching trap already documented elsewhere in the project, reappearing in a new place.</p>
+
+<h4><span class="tag t-med">MEDIUM</span> 15. Smaller items</h4>
+<ul>
+  <li>The bot's live knowledge of the lead is attached to the <em>oldest</em> message in the
+  conversation rather than the newest, so on a long chat the freshest facts sit furthest from the
+  model's attention.</li>
+  <li>Saving the Knowledge Base can silently affect zero rows while still showing a success message
+  (it filters on a field that is not where the company id actually lives). Contained by permissions,
+  so not a security issue — but a silent failure.</li>
+  <li>A later migration re-granted reps the ability to rewrite which lead a conversation points at,
+  partly undoing the tightening done the day before.</li>
+  <li>Nothing anywhere records what a message cost. With a 7.6× price gap between categories, neither
+  you nor the client can see where the money went.</li>
+</ul>
+
+<div class="box orange">
+<h4>The pattern worth naming</h4>
+<p style="margin-bottom:0">Every critical item is the same shape: <strong>a screen that reports
+something it does not actually measure.</strong> Health says green without asking. Broadcast says
+delivered without checking. Knowledge says the bot learned without telling it. The plumbing is
+careful and defensive; the instrumentation is optimistic. That is a fixable habit, and the fix is a
+rule: <em>a number on a screen must come from a measurement, or it must not be on the screen.</em></p>
+</div>
+
+<div class="pagebreak"></div>
+<h2>Part 3 — How WhatsApp should connect to the app</h2>
+
+<h3>The question underneath everything</h3>
+<p>There are two ways to build this, and we are currently drifting toward the wrong one.</p>
+<table>
+<tr><th style="width:50%">Option A — WhatsApp as a section</th><th>Option B — WhatsApp as a transport</th></tr>
+<tr>
+<td>WhatsApp gets its own page with its own inbox, its own contacts, its own templates and its own
+audiences. It sits <em>beside</em> the CRM.<br><br>
+This is what BotBiz is. It is also what a 1,767-line <code>/whatsapp</code> route with five tabs
+becomes if we keep going.</td>
+<td>WhatsApp is a way for existing records to talk. A lead has a WhatsApp thread. A party has one.
+An order sends its own status update. There is no "WhatsApp section" for a rep — only for the manager
+who configures it.<br><br>
+This is what a CRM with WhatsApp should be, and it is our actual advantage over BotBiz.</td>
+</tr>
+</table>
+
+<div class="box blue">
+<p style="margin-bottom:0"><strong>The test that settles it:</strong> a rep should never have to
+navigate to "the WhatsApp page" to do their job. They should message a customer from the customer's
+own page. If they must go somewhere else, we have built a second product inside the first one, and
+the two will slowly disagree about who the customer is.</p>
+</div>
+
+<h3>Principle 1 — One identity per phone number</h3>
+<p>Today, an inbound number is checked against leads only. It should pass through a single resolution
+step before anything else happens, and every part of the system should use that one answer:</p>
+<div class="flow">inbound phone number
+    |
+    v
+  [ RESOLVE ]  -- is this a PARTY?   -> existing customer: skip qualification entirely,
+    |                                   greet by name, offer reorder / statement / order status
+    |          -- is this a LEAD?    -> continue the qualification already in progress
+    |          -- is this STAFF?     -> internal, do not treat as a customer
+    |          -- nobody?            -> create a lead, assign a rep, start qualifying
+    v
+  one conversation, correctly attached</div>
+<p>This one change fixes problem 10, prevents duplicate customer records, and unlocks half the
+features in Part 4 — because a bot that knows it is talking to an existing distributor can answer
+"where is my order" and "what do I owe", which a bot talking to an anonymous number never can.</p>
+
+<h3>Principle 2 — One door out</h3>
+<p>Right now seven pieces of code call Meta's send endpoint directly, each with its own view of the
+rules. That is why opt-outs are enforced in one place and ignored in six. Everything outbound should
+pass through a single gateway that applies the rules once:</p>
+<div class="flow">bot reply · rep's manual reply · broadcast · order-status update · follow-up nudge
+                              |
+                              v
+                    +-------------------+
+                    |   SEND GATEWAY    |
+                    +-------------------+
+                    | 1. opted out?      -> refuse
+                    | 2. company toggle for this message type ON? (Part 5)
+                    | 3. inside 24h?     -> free text OK, else require a template
+                    | 4. template approved and not paused?
+                    | 5. within this company's budget and Meta's tier?
+                    | 6. per-person frequency cap not hit?
+                    | 7. send, then LOG:  who, what, cost, category, result
+                    +-------------------+
+                              |
+                              v
+                            META</div>
+<p><strong>Why this is the highest-value change in the document:</strong> every compliance rule, every
+cost control, every rate limit and every piece of reporting becomes one piece of code in one place.
+Today, adding a new rule means remembering to add it in seven places, and we have already proven we
+will forget.</p>
+
+<h3>Principle 3 — Events go out; screens do not come in</h3>
+<p>The CRM already knows when an order is dispatched, when a payment is overdue, when a follow-up is
+due. Those events should be published into the same gateway, so the message sends itself. The
+alternative — a rep remembering to open WhatsApp and type it — is the chore work we are trying to
+remove.</p>
+<p>Practically: reuse the notification-generator pattern already in the app (the scheduled functions
+that produce due reminders). Do not build a second scheduler.</p>
+
+<h3>Principle 4 — The CRM is the memory; the AI is not</h3>
+<p>This is already done correctly and should be protected. The bot writes what it learns into the
+lead record and reads it back next turn. It does not keep its own private memory. That means a rep
+opening the lead sees everything, the AI can be swapped or restarted with nothing lost, and there is
+one version of the truth. <em>Do not let a future feature keep state only inside the AI.</em></p>
+
+<h3>Principle 5 — A cache must be cleared by an event, not by a timer</h3>
+<p>The product catalogue is cached for an hour. When a company changes a price, that change should
+clear the cache immediately, not wait out the clock. Same rule for the knowledge base once it is
+wired up. A stale price quoted to a distributor is a real commercial problem, not a technical one.</p>
+
+<h3>Principle 6 — Never surface a number we did not measure</h3>
+<p>Covered above, but it belongs in the architecture list because it is a build rule, not a bug fix.
+If a panel cannot get real data yet, it should say "not connected" — never a plausible placeholder.</p>
+
+<h3>A note on what we must NOT build</h3>
+<div class="box red">
+<p><strong>WhatsApp's Commerce Policy prohibits selling pharmaceuticals.</strong> Meta bars
+"promoting or otherwise facilitating the exchange of prescription drugs", and bars commerce content
+for medical and healthcare products. Pharmacies get a narrow carve-out for grocery and convenience
+items; for OTC drugs they may use <em>messaging only</em>. Manufacturers may sell services, never
+product.</p>
+<p style="margin-bottom:0"><strong>What this means for us:</strong> WhatsApp's own Catalog, Cart and
+in-chat Payments are off the table permanently — and so is the "catalog orders" feature copied from
+BotBiz. <em>Talking</em> about products is fine, which is what our bot does. Taking the order must
+happen in Cerebyl, with WhatsApp only carrying the conversation and the confirmation. This is
+commercially good news: the transaction stays in our product rather than Meta's.</p>
+</div>
+
+<div class="pagebreak"></div>
+<h2>Part 4 — New features</h2>
+
+<h3>Tier 1 — Fix what is claimed but not true</h3>
+<p class="small">These are not new features. They are the difference between a demo and a product.
+Each one is currently on screen and lying.</p>
+
+<h4><span class="num">1.1</span> Real number health</h4>
+<p>Ask Meta, on a schedule, for each number's actual quality rating, messaging tier, verification
+status and marketing eligibility. Store it. Alert the moment it moves. <strong>Why it matters:</strong>
+losing a WhatsApp Business account is an extinction event for a distributor business. Days of warning
+is the most valuable thing we can give a client, and Meta hands us the data for free.</p>
+
+<h4><span class="num">1.2</span> Real broadcast reporting</h4>
+<p>Record what Meta actually said (accepted), then update each recipient as delivery and read
+confirmations arrive by webhook. Show the true funnel: <em>targeted → accepted → delivered → read →
+failed</em>, with failure reasons in plain English rather than error codes. Remove the 500-row cap and
+page the audience properly.</p>
+
+<h4><span class="num">1.3</span> Connect the Knowledge Base</h4>
+<p>Load the company's schemes, territory rules, dispatch times and MOQ into the bot's instructions,
+and clear its cache when they change. Today the bot deflects most policy questions to a human because
+it genuinely has no source. This is what turns it from a form-filler into something that answers.</p>
+
+<h4><span class="num">1.4</span> Fix opt-out, and add opt-in</h4>
+<p>Catch STOP before the bot goes quiet, in every language a customer might use it. Make opt-out
+records permanent rather than deletable. Then add the missing half: a consent record showing who
+agreed to marketing, when, and how — so a broadcast audience can be built from people who actually
+said yes, not from everyone in the database.</p>
+
+<h4><span class="num">1.5</span> One send gateway</h4>
+<p>The consolidation described in Part 3. Everything else in this list gets easier once it exists,
+and several items are not safely buildable without it.</p>
+
+<h3>Tier 2 — Remove the chore work</h3>
+
+<h4><span class="num">2.1</span> Template autopilot</h4>
+<p>Today a rep writes a template, guesses a category, submits it, and may be rejected for a reason
+they cannot interpret. Instead: generate the whole template pack for a company at onboarding from
+their own product and scheme data; <strong>check it against Meta's rules before submitting</strong>
+(claims, category mismatch, variable placement, missing examples, missing opt-out); submit; catch the
+verdict on the webhook rather than making someone click Refresh; and on rejection, rewrite and
+resubmit automatically, escalating to a human after two failed attempts.</p>
+<p>The pre-submission check is the valuable half. It is also where the category discipline lives —
+and category is a 7.6× cost multiplier.</p>
+
+<h4><span class="num">2.2</span> Language fan-out</h4>
+<p>One approved English template automatically translated and submitted for Hindi, Punjabi, Gujarati,
+Marathi. Meta groups templates by name and language, so the send layer can then pick automatically
+based on the language the customer has been writing in — which the bot already detects.</p>
+
+<h4><span class="num">2.3</span> Order lifecycle messages</h4>
+<p>Placed → packed → dispatched → delivered, sent automatically with the tracking link the app already
+generates. These are <strong>Utility</strong> templates at ₹0.115, and they are the highest-trust
+message a distributor ever receives from a supplier. This is the cheapest, highest-return feature in
+the entire document. <span class="small">(Subject to the company's toggle — see Part 5.)</span></p>
+
+<h4><span class="num">2.4</span> Buttons and list menus</h4>
+<p>The bot is text-only today. WhatsApp supports tappable buttons and menus. For a distributor typing
+on a phone this cuts the conversation length dramatically — which also cuts our AI cost, because
+shorter conversations mean fewer tokens.</p>
+
+<h4><span class="num">2.5</span> Cost meter and budget cap</h4>
+<p>Show each company its live WhatsApp spend split by category, with a monthly ceiling that stops
+sending and alerts rather than surprising them with a bill. Essential before 1 October 2026, when
+in-window replies stop being free.</p>
+
+<h4><span class="num">2.6</span> Follow-up sequences</h4>
+<p>Wire timed nudges to the follow-up slots the CRM already has, so a lead going quiet gets a message
+without a rep remembering. Reuse the existing scheduled-notification machinery.</p>
+
+<h3>Tier 3 — Make the rep look advanced</h3>
+
+<h4><span class="num">3.1</span> The bot serves existing customers</h4>
+<p>Once phone numbers resolve to parties (Part 3, Principle 1), the bot can answer "where is my
+order", "what is my outstanding", "send my statement" and "same as last time" — with everything
+scoped so a customer only ever sees their own data. This is the moment WhatsApp stops being a
+lead-capture channel and becomes a service channel. <span class="small">(Every one of these is
+individually switchable — Part 5.)</span></p>
+
+<h4><span class="num">3.2</span> Ambient order capture</h4>
+<p>A distributor sends a photo of a handwritten order pad, or a rambling voice note. The system parses
+it into line items, checks them against stock and that customer's rate card, and returns a proforma
+PDF for confirmation. The rep sees a finished order rather than a chat to read. The bot already
+understands photos and voice — this is mostly plumbing to the order system.</p>
+
+<h4><span class="num">3.3</span> Payment intimation capture</h4>
+<p>Customer sends a UTR or a payment screenshot; the system reads it and files a <em>pending</em>
+record for a human to confirm. It must never post a payment on its own — that rule already exists in
+the distributor portal and should be reused, not reinvented.</p>
+
+<h4><span class="num">3.4</span> Two-way voice</h4>
+<p>The bot already understands voice notes. Let it reply in voice, in Hindi. A large share of PCD
+distributors would rather talk than type, and no CRM in this segment does this.</p>
+
+<h4><span class="num">3.5</span> Conversation intelligence</h4>
+<p>Automatic thread summaries, buying-intent scoring and objection tagging, feeding the existing lead
+score — so the pipeline reflects what was actually said, not what a rep remembered to type.</p>
+
+<h4><span class="num">3.6</span> Rep response dashboard</h4>
+<p>First-response times, threads left unanswered, handoff-to-close rate. Turns the inbox from a place
+work happens into an instrument a manager can run the team with.</p>
+
+<h3>Tier 4 — The differentiators</h3>
+
+<h4><span class="num">4.1</span> Ban-risk forecasting</h4>
+<p>Once real health data exists (1.1), model each number's trajectory — quality, block rate, read
+rate, send mix, frequency-cap hits — and warn <em>days before</em> Meta acts, naming the campaign to
+pause. This is the most valuable single thing we could offer a client, and it is a natural extension
+of work already required.</p>
+
+<h4><span class="num">4.2</span> Self-optimising templates</h4>
+<p>Measure read rate, reply rate and conversion per template. Write variants, promote what works,
+retire what does not, and rewrite anything drifting toward a quality pause before Meta disables it.
+The company's message library improves on its own.</p>
+
+<h4><span class="num">4.3</span> Cashflow-aware follow-up</h4>
+<p>The system already knows every distributor's dues, ageing and payment habit. Let it choose
+<em>when</em> and <em>how firmly</em> to chase each one, throttling itself to protect both the
+relationship and the number's quality rating. Collections that behave like a good human, across
+hundreds of accounts.</p>
+
+<h4><span class="num">4.4</span> Company-wide conversation memory</h4>
+<p>Ask the in-app assistant: <em>"which distributors complained about packaging last quarter?"</em> —
+answered from every conversation, every rep, every number. Institutional memory that survives a rep
+resigning.</p>
+
+<h4><span class="num">4.5</span> Ten-minute onboarding</h4>
+<p>A new client connects their WhatsApp account and, within ten minutes, the system has read their
+product master, generated and submitted their template pack in five languages, built their knowledge
+base and gone live. Competitors bill a week for "setup".</p>
+
+<h4><span class="num">4.6</span> Compliance evidence pack</h4>
+<p>Every message pre-screened against Meta's policy, Indian drug-advertising law and each contact's
+consent state — plus a one-click export if Meta or a regulator ever asks. Compliance stops being a
+worry and becomes something to sell on.</p>
+
+<div class="pagebreak"></div>
+<h2>Part 5 — Company controls &amp; rep access</h2>
+
+<p class="lead">This part designs out three requirements from the owner: a granular switchboard so a
+company decides how much WhatsApp gives away, a permission model that keeps reps off the company
+number by default, and a way to stop the bot the moment a rep takes over.</p>
+
+<h3>5A. The capability switchboard</h3>
+
+<div class="box blue">
+<h4>The strategic point, stated first</h4>
+<p style="margin-bottom:0">This is not a settings screen — it is <strong>channel strategy</strong>.
+Cerebyl sells branded mobile apps and a distributor portal. If WhatsApp answers every question a
+distributor has, there is no reason for that distributor to ever install the company's app. Some
+owners will want WhatsApp to be a wide-open service desk; others will want it deliberately narrow, so
+that order status and statements are things you open the app for. <strong>Both are legitimate, and
+the product should not choose for them.</strong> The switchboard is how an owner sets where that line
+sits.</p>
+</div>
+
+<h4>Three rules for how the toggles must be enforced</h4>
+<ol>
+  <li><strong>Enforce by removing the tool, never by instructing the AI.</strong> If "order status" is
+  off, delete that capability from the bot's tool list for that company. Telling the model in its
+  prompt "do not discuss order status" works most of the time, and most of the time is not a
+  guarantee. A tool that does not exist cannot be called. <em>This is the principle the bot already
+  relies on today — its four buttons are its hard ceiling — and it should be how every toggle
+  works.</em></li>
+  <li><strong>Every "off" needs a redirection, not a refusal.</strong> A toggle set to off should not
+  produce "I can't help with that". It should produce <em>"You can see that live in our app — here's
+  the link"</em>. That turns each switch from a restriction into an app-adoption funnel, which is the
+  actual reason the owner turned it off.</li>
+  <li><strong>The same toggle is checked at the send gateway.</strong> Otherwise switching off "order
+  status" stops the bot answering it but does not stop the scheduled dispatch message going out. One
+  switch, both directions.</li>
+</ol>
+
+<h4>The proposed switch list</h4>
+<table>
+<tr><th style="width:26%">Group</th><th>Switches</th><th style="width:16%">Default</th></tr>
+<tr>
+  <td><strong>Master</strong></td>
+  <td>WhatsApp bot enabled. Off = messages are still received, still logged, still create leads —
+  but the bot never replies and a human handles everything. <span class="small">Capture and
+  conversation are separate concerns; turning off the bot must never turn off lead capture.</span></td>
+  <td>On</td>
+</tr>
+<tr>
+  <td><strong>Prospects</strong><br><span class="small">(new leads)</span></td>
+  <td>Qualify new leads · Share product list PDF · Share product images · Auto-detect and mirror
+  language · Auto-handoff to rep when qualified</td>
+  <td>All on</td>
+</tr>
+<tr>
+  <td><strong>Existing customers</strong><br><span class="small">(distributors / parties)</span></td>
+  <td>Serve existing customers at all · Order status &amp; tracking · Outstanding dues · Account
+  statement · Reorder / repeat last order · Payment intimation capture · Product &amp; price queries</td>
+  <td>Serve = on;<br>the rest off<br><span class="small">until the app-vs-WhatsApp choice is made
+  deliberately</span></td>
+</tr>
+<tr>
+  <td><strong>Automatic outbound</strong></td>
+  <td>Order placed confirmation · Packed · Dispatched (+ tracking) · Delivered · Payment received
+  receipt · Payment due reminder · Follow-up nudges · Scheme &amp; launch broadcasts</td>
+  <td>Off<br><span class="small">every one of these costs money per send</span></td>
+</tr>
+<tr>
+  <td><strong>Redirection mode</strong><br><span class="small">per switch</span></td>
+  <td>Stay silent · "Please check the app" + deep link · "Please contact your sales associate"
+  + rep name and number</td>
+  <td>App link<br>where an app exists</td>
+</tr>
+</table>
+
+<div class="box orange">
+<h4>Two honest cautions before this ships</h4>
+<p><strong>1. The app cannot yet replace what you would switch off.</strong> Turning off WhatsApp
+order updates in favour of app notifications assumes the app can reach a distributor whose app is
+closed. It currently cannot — phone notifications are at stage 1 (the phone schedules them itself,
+which only works while the app has been opened recently), and true push needs Firebase work that has
+to be repeated for every branded per-company build. <strong>An owner switching to "app only" today
+would quietly get a worse experience, not a better one.</strong> Either finish push first, or say
+this plainly in the toggle's help text.</p>
+<p style="margin-bottom:0"><strong>2. Order-status messages are the cheapest, most trusted thing we
+send.</strong> They are Utility templates at ₹0.115, and a dispatch notification is the single message
+a distributor most wants to receive. Switching them off to drive app installs is a real trade, not a
+free one. It is the owner's call — but the interface should tell them what they are giving up rather
+than presenting it as a neutral preference.</p>
+</div>
+
+<p><strong>Where it should live:</strong> the app already has a feature-flag system with the right
+shape — a list of keys, a set that defaults off, and a set only the platform console may change.
+Extend that with a third tier, <em>company-owner-controlled</em>, rather than inventing a parallel
+settings system. A second flag mechanism is how two parts of an app start disagreeing about whether a
+feature is on.</p>
+
+<h3>5B. What reps can and cannot do</h3>
+
+<p>Four of the six things asked for here are partly built already, and one is currently the wrong way
+round. Checking before building is the rule on this project, so here is the honest position:</p>
+
+<table>
+<tr><th style="width:45%">What you asked for</th><th>Where it actually stands</th></tr>
+<tr><td>A rep sees only their own leads' chats, never another rep's</td>
+    <td><span class="tag t-ok">DONE</span> Already enforced at the database level. A rep physically
+    cannot read another rep's conversation or its messages — it is the same rule the rest of the app
+    uses for leads.</td></tr>
+<tr><td>A rep is read-only on the company's main number by default</td>
+    <td><span class="tag t-crit">NOT TRUE</span> Reps <em>can</em> send from the company number today,
+    on any conversation assigned to them. This needs building.</td></tr>
+<tr><td>An admin toggle to grant reps sending rights on the main number</td>
+    <td><span class="tag t-new">NEW</span></td></tr>
+<tr><td>A tick — "have you contacted this lead?" — that stops the bot</td>
+    <td><span class="tag t-new">NEW</span> though the pieces exist: the lead pipeline already has a
+    "Contacted" stage, and reps already have permission to change a conversation's state.</td></tr>
+<tr><td>After that, the number politely redirects the lead to the rep</td>
+    <td><span class="tag t-new">NEW</span> — and it fixes something worse than a missing feature.
+    Today when the bot hands off it simply <em>goes silent</em>. A lead who keeps messaging gets
+    nothing back at all. Silence is a worse experience than the redirect you are asking for.</td></tr>
+<tr><td>The lead record and the WhatsApp chat are merged so a rep sees everything in one place</td>
+    <td><span class="tag t-high">BACKWARDS</span> A panel exists that shows the <em>lead</em> inside
+    the WhatsApp inbox. Nothing shows the <em>WhatsApp conversation</em> inside the lead page — and
+    the lead page is where a rep actually lives.</td></tr>
+</table>
+
+<h4>Read-only by default, with an owner override</h4>
+<p>A company setting — <em>"Allow reps to reply from the company number"</em>, default <strong>off</strong>.
+Enforced on the server, not just by hiding the button, because a hidden button is not a permission.</p>
+<p>When it is off, the rep sees the full conversation, and the message box is replaced with a clear
+line and a one-tap action:</p>
+<div class="quote">Replies from the company number are restricted. Message this lead from your own
+number.  →  <strong>[ Open in WhatsApp ]</strong></div>
+<p>That button opens the rep's own WhatsApp with the lead already addressed, so the restriction costs
+them nothing in effort. Without it, the rule just feels like an obstacle and reps will work around it.</p>
+
+<div class="box orange">
+<p style="margin-bottom:0"><strong>The cost of this design, stated plainly:</strong> anything a rep
+sends from their personal phone is <em>invisible to the CRM</em>. No transcript, no delivery ticks, no
+searchable history, and nothing for the AI summary to read. The real answer for reps who matter is to
+connect <strong>their number to the platform too</strong> — the system already supports per-rep
+numbers, and the bot already knows how to hand a conversation across to one. Then the rep messages
+from their own number <em>and</em> everything is still logged. Recommend that as the paid-tier path;
+treat personal-phone messaging as the fallback for small teams.</p>
+</div>
+
+<h4>The "I've contacted them" tick, and stopping the bot</h4>
+<p>This is the API-cost control, and the design matters more than it looks.</p>
+<ul>
+  <li><strong>Where the tick lives:</strong> three places, same action — on the lead card in the new-leads
+  list, in the WhatsApp thread header, and on the lead detail page. A rep should never have to hunt
+  for it.</li>
+  <li><strong>It must override the "always on" setting.</strong> A company can currently set the bot to
+  keep talking forever. If the rep's tick does not beat that setting, this feature will silently do
+  nothing for exactly the companies that need it most. Order of authority:
+  <em>rep has taken over &gt; company always-on &gt; default</em>.</li>
+  <li><strong>No AI call afterwards — that is where the saving comes from.</strong> Once ticked, further
+  messages from that lead get one fixed, warm, pre-written line naming the rep and their number. The
+  language model is never invoked again for that conversation. The cost goes to zero, not down.</li>
+  <li><strong>Send it at most once per day.</strong> A chatty lead must not receive the same redirect
+  fifteen times — that is the kind of thing that gets a number reported.</li>
+  <li><strong>Word it as a graduation, not a brush-off.</strong> Something like: <em>"Aapki enquiry
+  [Rep] ko de di gayi hai — wo aapko [number] se direct contact karenge. Aap unhe seedha message kar
+  sakte hain."</em> The lead should feel promoted to a human, not dismissed by a robot. Wording should
+  be editable per company and follow the language the lead was already using.</li>
+  <li><strong>One source of truth.</strong> Store it on the conversation. Moving the lead's stage to
+  "Contacted" may set it as a side effect — but never the reverse. Two fields that update each other
+  in both directions always drift apart eventually.</li>
+</ul>
+
+<h4>The merged lead ↔ WhatsApp view</h4>
+<p>The rep's home is the lead page. Everything the bot learned should be there, not behind a separate
+WhatsApp section. The panel should carry:</p>
+<ol>
+  <li><strong>An AI brief</strong> — what they asked for, what they actually want, any objection
+  raised, and the obvious next step. Three or four lines a rep can read before dialling.</li>
+  <li><strong>The full transcript, read-only</strong>, including the photos, voice notes and PDFs the
+  lead sent.</li>
+  <li><strong>The extracted fields</strong> — firm, profession, area, DL/GST, product interest — with
+  a marker showing which the bot filled in versus which a human did.</li>
+  <li><strong>The "I've contacted them" tick</strong> and the "message from my number" button.</li>
+</ol>
+<div class="box red">
+<p style="margin-bottom:0"><strong>The cost rule that must not be broken:</strong> generate the brief
+<strong>once</strong>, when the bot hands off, and store it on the lead. Never generate it when the
+page is opened. A summary that regenerates on every page view is a language-model call every time any
+rep glances at any lead — which is precisely the runaway API bill this whole feature set is meant to
+prevent. Offer an explicit "refresh brief" button for the rare case where it is wanted.</p>
+</div>
+<p class="small">Half the data already exists: the bot's notes accumulate on the lead record today.
+What is missing is a real summary (the existing panel shows only the single most recent note) and the
+panel being on the lead page at all.</p>
+
+<div class="pagebreak"></div>
+<h2>Part 6 — The order to build in</h2>
+
+<table>
+<tr><th style="width:14%">Stage</th><th style="width:38%">What</th><th>Why this order</th></tr>
+<tr>
+  <td><strong>Stage 0</strong><br><span class="small">immediate</span></td>
+  <td>Close the open AI endpoint (8). Fix STOP-after-handoff (3). Remove the "DCGI approved" fallback
+  text (13). Make the Health tab and Knowledge tab say "not connected yet" until they are (1, 2).</td>
+  <td>Four small changes. Two are costing money or breaking policy right now; two stop the product
+  from telling the user something untrue. None depends on anything else.</td>
+</tr>
+<tr>
+  <td><strong>Stage 1</strong><br><span class="small">the foundation</span></td>
+  <td>One send gateway (1.5). Phone-to-party resolution (Part 3, Principle 1). Real number health
+  (1.1). Opt-in / opt-out done properly (1.4). <strong>Rep read-only default + owner override
+  (5B).</strong></td>
+  <td>Everything after this is cheaper and safer because of it. The rep permission rule belongs here
+  because it is a send-path decision, and the send path is being rebuilt anyway.</td>
+</tr>
+<tr>
+  <td><strong>Stage 2</strong><br><span class="small">control &amp; honest numbers</span></td>
+  <td><strong>The capability switchboard (5A)</strong> and <strong>the contacted-tick bot cutoff
+  (5B).</strong> Real broadcast reporting and paging (1.2). Template status and quality webhooks (7).
+  Cost meter (2.5). Rate and tier awareness (11).</td>
+  <td>The switchboard needs the gateway underneath it to be enforceable in both directions. The
+  contacted-tick pays for itself immediately in AI cost, and pairs naturally with the cost meter that
+  proves it worked.</td>
+</tr>
+<tr>
+  <td><strong>Stage 3</strong><br><span class="small">the chore work</span></td>
+  <td>Template autopilot (2.1), language fan-out (2.2), order lifecycle messages (2.3), buttons
+  (2.4), follow-up sequences (2.6), knowledge base wired (1.3), <strong>merged lead ↔ WhatsApp view
+  (5B).</strong></td>
+  <td>This is the stage the original brief asked for. It is deliberately not first — automating
+  template creation on top of a send path that ignores opt-outs would industrialise the problem.</td>
+</tr>
+<tr>
+  <td><strong>Stage 4</strong><br><span class="small">the product</span></td>
+  <td>Bot serves existing customers (3.1), ambient order capture (3.2), payment intimation (3.3),
+  voice (3.4), conversation intelligence (3.5), rep dashboard (3.6).</td>
+  <td>Each one depends on the identity resolution built in Stage 1, and each one arrives with its own
+  switch from Stage 2 already in place.</td>
+</tr>
+<tr>
+  <td><strong>Stage 5</strong><br><span class="small">the moat</span></td>
+  <td>Ban-risk forecasting (4.1), self-optimising templates (4.2), cashflow-aware follow-up (4.3),
+  conversation memory (4.4), ten-minute onboarding (4.5), compliance pack (4.6).</td>
+  <td>All of these are cheap extensions of data the earlier stages already collect. None is buildable
+  before them.</td>
+</tr>
+</table>
+
+<div class="box green">
+<h4>The closing judgement</h4>
+<p>The hard part is done and done well. Building a reliable, secure, always-on WhatsApp pipeline with
+a bot that behaves itself is the part most teams get wrong, and this one is careful in exactly the
+places that matter — signatures, duplicates, races, fallbacks, and never quoting a rate it should not
+know.</p>
+<p>What is missing is the discipline of only showing what we actually measured, and the compliance
+edges that protect the client's WhatsApp number. Both are days of work, not months.
+<strong>Do Stage 0 and Stage 1 before onboarding a second client</strong> — after that, the automation
+originally asked for sits on a foundation that can carry it.</p>
+<p style="margin-bottom:0">The owner controls in Part 5 change the shape of the product in a good
+way: they turn WhatsApp from a fixed feature into something each company tunes against its own
+strategy — how much to serve on WhatsApp, how much to reserve for their app, and how much rope to
+give a rep. That is a far better thing to sell than a bot with no dial on it.</p>
+</div>
+
+<p class="small" style="margin-top:26px; border-top:1px solid #ddd; padding-top:10px">
+Sources for policy and pricing claims: Meta for Developers — Template fundamentals; Template
+categorization; WhatsApp Commerce Policy; Meta healthcare-sector commerce restrictions; Marketing
+Messages Lite (MM Lite) frequency-cap documentation; India 2026 per-message pricing schedules.
+All code findings were verified by direct reading of the repository on 16 August 2026; no code was
+modified.
+</p>
+
+</body>
+</html>

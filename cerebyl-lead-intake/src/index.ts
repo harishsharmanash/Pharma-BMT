@@ -16,6 +16,7 @@ import { classify } from "./classify";
 import { resolveCompany, slugFromTo } from "./company";
 import { findDuplicate, normalizePhone } from "./dedupe";
 import { parseLead, rawToText } from "./parse";
+import { checkSender, readSenderAuth } from "./sender-auth";
 import { sbInsert, sbRpc, sbUpdate } from "./supabase";
 
 const RAW_EXCERPT_MAX = 4096;
@@ -40,6 +41,8 @@ type LogRow = {
 	company_id: string | null;
 	intake_slug: string;
 	from_addr: string;
+	sender_domain: string;
+	sender_auth: string;
 	subject: string;
 	source_matched: string;
 	parse_ok: boolean;
@@ -79,11 +82,14 @@ function decodeEncodedWords(s: string): string {
 async function handle(message: ForwardableEmailMessage, env: Env): Promise<void> {
 	const slug = slugFromTo(message.to);
 	const subject = decodeEncodedWords(message.headers.get("subject") ?? "");
+	const senderAuth = readSenderAuth(message.headers, message.from);
 
 	const log: LogRow = {
 		company_id: null,
 		intake_slug: slug,
 		from_addr: message.from,
+		sender_domain: senderAuth.domain,
+		sender_auth: senderAuth.summary,
 		subject,
 		source_matched: "none",
 		parse_ok: false,
@@ -115,6 +121,24 @@ async function handle(message: ForwardableEmailMessage, env: Env): Promise<void>
 			return;
 		}
 		log.company_id = intake.company_id;
+
+		// 1b. Sender authenticity. The To: slug is a company name and therefore
+		// guessable, so without this anyone can inject leads into any company.
+		// This runs BEFORE the parser and before the forward on purpose: a
+		// rejected message must not reach the LLM fallback (cost amplification
+		// on the victim's budget) and must not be forwarded into their real
+		// inbox (phishing arriving through a channel they trust).
+		const senderDecision = checkSender(
+			senderAuth,
+			intake.allowed_sender_domains,
+			Boolean(intake.require_allowlist),
+		);
+		if (!senderDecision.ok) {
+			log.outcome = "rejected_sender";
+			log.parsed = { error: senderDecision.reason };
+			await saveLog();
+			return;
+		}
 
 		// 2–3. Parse (router → deterministic parser or LLM fallback).
 		const { result: parsed, error: parseError } = await parseLead(env, message.from, subject, text);
