@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-09-27 — Claude Opus (lead, cloud session), WhatsApp: phone-reply echoes + bot styles & message limit — BUILT, NOT DEPLOYED
+
+- **Both sibling workers are on GitHub now (private):** `harishsharmanash/cerebyl-whatsapp-worker` and `harishsharmanash/ceremate-worker` (= local `acrowell-ai-worker` folder; "Acrowell" is a client name, keep it out of new names). Pushed from the Mac 27 Sep. **`git pull` in each before editing on the Mac.** Cloud sessions can now work on them.
+- **Branch `claude/cerebyl-app-build-iaeshs` in leadenthrella + cerebyl-whatsapp-worker (not merged).**
+- **1. Phone replies show in Cerebyl.** Worker handles Coexistence `smb_message_echoes` (`src/echo.ts`): stored as outbound `sent_via='phone'`, flips status to `human` (bot stands down), never creates a lead, idempotent. Every outbound row now carries `sent_via` bot/app/phone; chat bubbles show a small label (`sent-via-label.tsx`). **Needs Harish: tick `smb_message_echoes` in Meta App → WhatsApp → Configuration → Webhook fields.** Only messages from then on — no history backfill.
+- **2. Bot style (AI Knowledge → "Bot style").** `raw_settings.whatsapp_ai_knowledge.bot_mode` = form | smart | sales, `bot_max_messages` 1–20 / 0 = none. **Default when unsaved: smart + 5** (applies to live companies on deploy). Form mode: fixed-wording checklist, first reply no AI, later replies one small JSON-extraction call (`src/form-bot.ts`), usage billed only when AI ran. Smart/sales: mode lines in the cached prompt, budget/final-message line in the fresh context. Final allowed reply always closes ("sales executive will contact you") and hands off, even with bot-always-on. **Limit + modes apply to LEAD chats only — party (customer) chats unchanged.** Counter = `whatsapp_conversations.bot_replies_sent` (counts replies, not bubbles).
+- Also: runBotTurn re-reads conversation status after the debounce, so a rep reply in those seconds (app or phone) stops the bot.
+- **Deploy order:** (1) apply migration `20261002120000_whatsapp_sent_via_and_bot_limit.sql` in SQL editor, (2) `supabase functions deploy whatsapp-send-message`, (3) `wrangler deploy` the worker, (4) `ship.sh` the app, (5) tick the Meta webhook field. Worker + edge fn degrade safely if the migration is missing (no label, no limit) — nothing lost.
+- Verified: worker tsc 0, 80 tests (22 new, mutation-checked); app tsc 0, 721 tests, build OK. **Not live-tested** — needs a real Coexistence number.
+- Cloud-session quirk: `npm ci` in leadenthrella 403s on `cdn.sheetjs.com` (xlsx). Local check only: `npm pkg set dependencies.xlsx=0.18.5 && npm install`, then `git checkout package.json package-lock.json`. Never commit that.
+
+---
+
 ## 2026-08-20 — Antigravity (lead), Cerebyl Console Enterprise Security Remediation & System Buildout SHIPPED
 
 Executed and shipped complete remediation for all 15 audit findings (H1–H5, M1–M4, L1–L4) and 10 enterprise system features (F1–F10) documented in `Files/CEREBYL-CONSOLE-SECURITY-AUDIT-AND-ROADMAP.md`:
