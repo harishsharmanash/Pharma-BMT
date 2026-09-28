@@ -26,7 +26,7 @@ Order of preference is **platform token first, per-company token as fallback**, 
 - `leadenthrella/supabase/functions/whatsapp-send-message/index.ts`
 
 These live in two SEPARATE repos. Only one of them is in the working directory for any given
-aider run — this ticket will be run twice, once per repo. Only edit the file that exists in the
+worker run — this ticket will be run twice, once per repo. Only edit the file that exists in the
 current working directory; ignore the other.
 
 ## Approach

@@ -6,7 +6,7 @@
 > `Files/scratchpad/handoff-2026-08-14-whatsapp-bot.md`. Context: the bot
 > (`cerebyl-whatsapp-worker/src/bot.ts`) just gained media understanding, a qualification
 > checklist with auto-handoff, per-company cached MRP catalog, and product list/image serving.
-> NO aider/DeepSeek — lead agent plans and executes everything.
+> NO delegated worker — lead agent plans and executes everything.
 >
 > **Main task — PDF product lists:** Harish rejected the plain-text MRP list. He wants
 > `share_product_list` (bot.ts) to send a designed PDF like the product section's export in the

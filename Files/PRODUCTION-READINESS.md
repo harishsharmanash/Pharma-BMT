@@ -4,9 +4,17 @@
 filtered for what actually applies to this stack, plus (b) Claude's own audit of the
 codebase and research into what breaks a multi-tenant Supabase/Cloudflare CRM at scale.
 
-**Status: nothing here is started.** This is a backlog, not a report of work done.
-Same trap as `Files/CLIENT-BACKLOG.md` — **re-verify against current code before building
-any item**, because a finished item reads exactly like a to-do.
+**Status: NO LONGER ACCURATE AS WRITTEN — was "nothing here is started" (28 Jul 2026).**
+A large amount of this has since shipped, most of it on **24 Aug 2026** in the full security
+audit + remediation (see `CLAUDE.md` §8i and the `WORKLOG.md` entry of that date): RLS
+rep-scoping across the financial core, the cross-tenant exfiltration chain, edge-function
+authorization, tenant-column pinning, grant hygiene, retention wiring, CI verification, and
+the cross-tenant isolation suite.
+
+This is still a backlog, not a report of work done — but **the "nothing started" line above is
+the exact trap `Files/CLIENT-BACKLOG.md` documents**, where a finished item reads identically
+to a to-do and gets rebuilt. **Re-verify every item against current code before building it**,
+and move anything shipped into the done column in the same session.
 
 **Owner column:** `Claude` = quality floor, never delegate (architecture, RLS, migrations,
 live infra, prompts). `Kimi` = mechanical/bulk, delegate with a ticket.

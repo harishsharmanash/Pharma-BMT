@@ -4,6 +4,19 @@
 **Scope:** Owner console (`leadenthrella/src/routes/console.*.tsx`), Supabase (migrations + 34 edge functions), and the three Cloudflare workers (`acrowell-ai-worker`, `cerebyl-whatsapp-worker`, `cerebyl-lead-intake`).
 **Source:** Full codebase audit. Every finding below cites the exact file and line. Verify each on the live system before and after fixing — the live DB has migration drift (migrations are applied manually; `supabase db push` is banned), so repo state ≠ production state.
 
+> ⚠️ **PARTIALLY SUPERSEDED — a second, wider audit ran 17–24 Aug 2026 and its findings are REMEDIATED.**
+> See `CLAUDE.md` §8i and the `WORKLOG.md` entry of 24 Aug. That pass covered this ground plus
+> the areas this document did not reach (storage, realtime, the public/anon surface, the identity
+> layer, and the three Workers as attack surfaces rather than as code), and it **fixed 23 findings**
+> — including a working cross-tenant exfiltration chain, the un-rep-scoped financial core, an
+> invoice-forgery path through `order_items`, and an anonymously-reachable `seed-demo` (now deleted).
+>
+> **Before actioning anything below, check whether it is already fixed.** Several items here now
+> describe resolved state, and a fixed finding reads exactly like an open one. Two concrete
+> corrections to facts stated in this document: there are **~30** edge functions, not 34 (query
+> `npx supabase functions list`, never a hardcoded list), and the WhatsApp webhook does **not**
+> fail open — it returns 500 when `WHATSAPP_APP_SECRET` is unset.
+
 ---
 
 # PART 1 — SECURITY REMEDIATION

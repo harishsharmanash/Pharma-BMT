@@ -1,9 +1,6 @@
 # macOS junk
 .DS_Store
 
-# aider
-.aider*
-
 # dependencies & build output
 node_modules/
 .output/
@@ -20,3 +17,6 @@ Files/App UI inspirations/
 
 # Local editor prefs
 .vscode/
+
+# Design reference images (45 MB) — stays on Google Drive, not in git
+Files/Assets/Branding/Profile avatars/

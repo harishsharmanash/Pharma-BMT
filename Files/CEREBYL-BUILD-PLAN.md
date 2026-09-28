@@ -5,8 +5,8 @@
 **This document is HOW we build it** — batching, lanes, ticket structure, gates, and who does what.
 
 > **Division of labour (Harish's instruction, 10 Aug):** the lead agent does planning, ticket
-> authoring, diff review, migrations and deploys. **Everything else goes to DeepSeek V4 Flash via
-> aider.** No lead-written feature code. The five things the lead never delegates (CLAUDE.md §2)
+> authoring, diff review, migrations and deploys. **Everything else goes to a worker agent via
+> worker.** No lead-written feature code. The five things the lead never delegates (CLAUDE.md §2)
 > stay non-delegated: diff review, architecture calls, AI prompt edits, DB migrations, live-infra
 > debugging. Those are the 5%.
 
@@ -110,7 +110,7 @@ project has listed shipped work as outstanding. Evidence already found:
 | F13 deep zoom | `product_media` table, `product-image-lightbox.tsx` | May be most of the way there. |
 | F9 calculator | `portal.product.$productId.tsx`, `product_pts_ptr` migration | PTS/PTR data exists; the calculator UI may not. |
 
-**Batch 0 is seven DeepSeek *investigation* tickets that change no code** and report file:line
+**Batch 0 is seven worker *investigation* tickets that change no code** and report file:line
 evidence. I fold their answers into the real tickets. This costs ~1 day and has already paid for
 itself twice on this project.
 
@@ -135,11 +135,11 @@ structural fact in this repo is that **the rep-side surface (`src/routes/leads*`
 edge functions) share almost no files.** That is what makes two full lanes possible.
 
 **Rule 2 — schema first, one migration per batch.** Every batch opens with a schema sub-ticket
-DeepSeek *writes* as SQL and I *review and apply by hand* via the SQL Editor (never `db push`), one
+The worker *writes* as SQL and I *review and apply by hand* via the SQL Editor (never `db push`), one
 tap-to-copy block per migration. Feature tickets then never block on schema, and I only do one
 manual DB session per batch instead of one per ticket.
 
-**Rule 3 — a stable ticket preamble, a changing tail.** DeepSeek's disk cache is automatic and
+**Rule 3 — a stable ticket preamble, a changing tail.** The worker's disk cache is automatic and
 keyed on prefix, so every ticket in this programme opens with the **identical** preamble block
 (project conventions, standing rules, verification contract) and puts the delta at the end. One
 preamble file, reused verbatim ~60 times.
@@ -152,7 +152,7 @@ preamble file, reused verbatim ~60 times.
 | **B — Distributor portal** | `src/routes/portal.*`, `src/lib/portal*.ts`, `supabase/functions/portal-*` | Batches 1B → 4B |
 | **C — Infra / AI worker / mobile** | `acrowell-ai-worker/**` (separate repo), `leadenthrella/mobile/**`, `src/lib/offline/*`, `src/lib/device-notifications.ts` | Continuous, disjoint from A and B |
 
-**Max three concurrent aider agents**, one per lane, each in its own git worktree with explicit file
+**Max three concurrent worker agents**, one per lane, each in its own git worktree with explicit file
 ownership (this pattern is proven — see memory *"Parallel Kimi agents"*). Shared files
 (`src/lib/features.ts`, `permissions.ts`, `src/routes/__root.tsx`, `styles.css`) are **owned by
 nobody**: any change to them is a separate, serialised ticket I schedule between batches.
@@ -165,18 +165,18 @@ nobody**: any change to them is a separate, serialised ticket I schedule between
 
 ## 2. The batches
 
-Effort is DeepSeek ticket count, not calendar time. Dependencies are hard unless marked soft.
+Effort is worker-ticket count, not calendar time. Dependencies are hard unless marked soft.
 
 ### Batch 0 — Audit & decisions · *blocking, ~7 tickets, all investigation*
 Seven read-only tickets, one per row of §0.2, each reporting exact files, line numbers, data flow,
-and a "build / extend / already done" verdict. Plus **0.8: corpus scoring (F24)** — DeepSeek fixes
+and a "build / extend / already done" verdict. Plus **0.8: corpus scoring (F24)** — the worker fixes
 the harness to write a machine-readable summary, I run it and *read* the result.
 **Gate:** your decision on §0.1 (offline architecture). Nothing in Batch 1C starts without it.
 
 ### Batch 1C — Platform infrastructure · *lane C, ~8 tickets, parallel with 1A and 1B*
 | # | Feature | Notes |
 |---|---|---|
-| 1C.1 | **F23** AI provider abstraction | Separate repo (`acrowell-ai-worker`) — zero conflict risk. Task taxonomy `classify / extract / ocr / analyse / converse`, model+tokens+latency logged against existing metering. **Prompt files are mine, not DeepSeek's** (§2 hard rule) — DeepSeek does the routing layer, I do any `prompt*.ts` edit. |
+| 1C.1 | **F23** AI provider abstraction | Separate repo (`acrowell-ai-worker`) — zero conflict risk. Task taxonomy `classify / extract / ocr / analyse / converse`, model+tokens+latency logged against existing metering. **Prompt files are mine, not the worker's** (§2 hard rule) — the worker does the routing layer, I do any `prompt*.ts` edit. |
 | 1C.2 | **F17** FCM push infra | Device token registration, per-category prefs, quiet hours, deep-link payload. **Needs a Firebase project from you** — it is the one external dependency in the whole plan. |
 | 1C.3 | **F1** offline foundation | Per the §0.1 decision. Local store, write queue with client-generated IDs, idempotent server handling, sync-state indicator component, explicit cacheable/never-cached lists (dues, live stock, ledger = never), price-change confirmation rule. |
 
@@ -184,10 +184,10 @@ the harness to write a machine-readable summary, I run it and *read* the result.
 F15 tasks (schema → auto-population → three-action row → manager injection → offline queue),
 F2 speed-to-lead (`first_contact_at`, SLA config, countdown badge, breach notify, the three
 reports), F18 ranking as filter options on top of the existing saved-filters mechanism.
-**F16 voice-note splits across lanes:** the transcription/extraction endpoint is a lane-C ticket on
-the worker; the record→review→confirm UI is a lane-A ticket. It ships only after a real
+**F16 voice-note splits across lanes:** the transcription/extraction endpoint is a lane-C ticket in
+the AI worker; the record→review→confirm UI is a lane-A ticket. It ships only after a real
 Hindi/Punjabi/English code-switched test with actual reps — that is a you-and-me task, not a
-DeepSeek one.
+worker ticket.
 **Depends on:** 1C.1 (F16 extraction), 1C.2 (1A push wiring), 1C.3 (task completion offline).
 
 ### Batch 1B — Distributor quick wins · *lane B, ~7 tickets, parallel with 1A*
@@ -224,7 +224,7 @@ F12. OCR pass → composition extraction → match against the 3C index → exac
 product page, no match routes to a filtered composition-family list. Works on any company's
 packaging. Graceful partial reads with user correction, aggressive caching.
 **The regulatory framing is a hard constraint enforced in two places** — the model prompt (mine) and
-the UI copy (DeepSeek's, with my review): catalogue navigation results only, never therapeutic
+the UI copy (the worker's, with my review): catalogue navigation results only, never therapeutic
 substitution language, "Business tool only" footer on every screen.
 
 ### Batch 3B — Branded catalogue generator · *lane B, ~6 tickets*
@@ -278,18 +278,9 @@ ever switched on).
 
 ### The preamble (written once, reused verbatim ~60 times)
 `Files/scratchpad/TICKET-PREAMBLE.md` — project identity, the §5 standing product rules, the
-never-regress list, the file map, and the verification contract. Attached to every aider run as
+never-regress list, the file map, and the verification contract. Attached to every worker run as
 `--read`, alongside `.claude/skills/cerebyl-context/SKILL.md`. Cache hits come from this being
 byte-identical every time; the ticket body is the delta.
-
-### The invocation
-```bash
-cd "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Drive/Claude/Pharma BMT/leadenthrella" && \
-aider --yes-always --no-auto-commits --no-suggest-shell-commands \
-  --read .claude/skills/cerebyl-context/SKILL.md --read ../Files/scratchpad/TICKET-PREAMBLE.md \
-  --file <files to edit> --read <reference files> \
-  --message-file ../Files/scratchpad/tickets/<batch>-<n>.md
-```
 
 ### Every ticket carries the same five sections
 1. **Goal** — one paragraph, user-visible outcome.
@@ -305,7 +296,7 @@ aider --yes-always --no-auto-commits --no-suggest-shell-commands \
 
 ### My review loop per ticket — the part that is not delegable
 - Read the **full `git diff`**, specifically hunting for **deletions**. This worker has a proven
-  habit of removing shipped features while restyling (memory: *"DeepSeek worker review"*).
+  habit of removing shipped features while restyling (memory: *"Review diffs for deletions"*).
 - Confirm no stray files, no shared-file edits it didn't own, no test that passes by never running.
 - Do **not** re-run a verification the worker already ran and reported (§2 rule 2) — read the diff
   instead.
@@ -339,5 +330,5 @@ Then the §2b push checklist, then a `WORKLOG.md` entry.
   The Batch 0 audit will tell us; I have not assumed either way.
 - **F6 must not fork the offers concept.** Two scheme systems in one cart is worse than no scheme
   engine.
-- **This is ~90 DeepSeek tickets across six months of scope.** The plan is designed so that stopping
+- **This is ~90 worker tickets across six months of scope.** The plan is designed so that stopping
   after any batch leaves a coherent product, not a half-built one.

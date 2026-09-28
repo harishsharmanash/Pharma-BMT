@@ -5,12 +5,12 @@
 **This file is the ORDER OF OPERATIONS** — every step, in sequence, with exact files, exact
 commands, acceptance criteria, and who does it.
 
-**Ground rules carried from `CLAUDE.md`:** lead plans/reviews/migrates/deploys; DeepSeek V4 Flash
-via aider writes the code; every ticket says *do not commit*; the lead runs the gates because
+**Ground rules carried from `CLAUDE.md`:** lead plans/reviews/migrates/deploys; a worker agent
+via worker writes the code; every ticket says *do not commit*; the lead runs the gates because
 `--no-suggest-shell-commands` means the worker cannot; mutation-test every new test; build and
 deploy from the **main checkout only**.
 
-Notation: **[L]** = lead does it · **[D]** = DeepSeek ticket · **[H]** = only Harish can do it.
+Notation: **[L]** = lead does it · **[D]** = worker ticket · **[H]** = only Harish can do it.
 
 ---
 
@@ -38,9 +38,9 @@ acceptance check compares against this number, and a drifted baseline makes all 
 ```bash
 ls leadenthrella/.claude/TICKET-PREAMBLE.md leadenthrella/.claude/skills/cerebyl-context/SKILL.md
 ```
-Both get `--read` on every aider run below. If the preamble moved, fix the path once here rather
+Both get `--read` on every worker run below. If the preamble moved, fix the path once here rather
 than in twelve tickets. **Keep every `--file`/`--read` path inside `leadenthrella/`** — a path from
-`Files/` binds aider to the parent repo and wrecks its repo-map.
+`Files/` binds worker to the parent repo and wrecks its repo-map.
 
 ---
 
@@ -77,7 +77,7 @@ option and matches the pattern already proven in `generate_notifications_all()`.
   formula** — two copies of a scoring formula is exactly the drift the notification-generator comment
   warns about, and this project has already been bitten twice.
 - `REVOKE ALL … FROM PUBLIC; GRANT EXECUTE … TO service_role;`
-- Keep it **small** — aider's edit format degrades on long SQL (§2 harness rule 6).
+- Keep it **small** — worker's edit format degrades on long SQL (§2 harness rule 6).
 
 ### Step L1.2 [L] — review, then hand Harish one tap-to-copy block
 Read the SQL yourself. Check: loop bounded, no cross-company leak, grants correct, function name not
@@ -117,7 +117,7 @@ from the attachments, while `/extract` and `/analyze` still claim by route. It a
 *after* validation, so an empty/malformed message is no longer charged.
 
 ### Step L2.1 [L] — commit it as its own change
-This is the lead's call, not DeepSeek's — it is billing logic in the AI worker.
+This is the lead's call, not the worker's — it is billing logic in the AI worker.
 ```bash
 cd "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Drive/Claude/Pharma BMT/acrowell-ai-worker" && git add src/index.ts .gitignore && git commit -m "Bill /chat by actual attachment kind, and only after validation"
 ```
@@ -215,7 +215,7 @@ found in recon this session** — both must be in the ticket, because neither is
 
 ### Step W1.1 [D] — the worker endpoint
 - Ticket: `Files/tickets/W1-1-voice-note-endpoint.md`
-- Repo: **`acrowell-ai-worker`** (separate repo — its own aider run, cwd is that folder).
+- Repo: **`acrowell-ai-worker`** (separate repo — its own worker run, cwd is that folder).
 - Files: create `src/voice-note.ts`; edit `src/index.ts` (route allow-list + dispatch + usage claim).
 - Read: `src/extract.ts` — it is the closest existing shape (multipart in, structured JSON out) and
   the ticket should say *copy its structure*.
@@ -284,7 +284,7 @@ live OCR path needs anyway.
   many have a non-empty composition, how many parse cleanly into `molecule + strength + unit`, the
   distinct strength formats found (`200mg` / `200 MG` / `0.2g` / `200mg+200mg`), the separator
   characters in use, and **20 verbatim examples spanning the messiest cases**.
-- Ask for **verbatim quotes, never `path:line`** — DeepSeek cannot see line numbers and will burn an
+- Ask for **verbatim quotes, never `path:line`** — the worker cannot see line numbers and will burn an
   entire run trying to count them (§2 harness rule 2).
 
 **[L] reads the report and rules:**
@@ -322,7 +322,7 @@ DB matching (exact product / composition-family list / no match) is W2.3, not bu
 
 ## Step W2.3 — DONE and DEPLOYED (16 Aug 2026)
 
-Built with DeepSeek/aider on a detailed ticket (frontend UI), lead-written for the DB matching
+Built with a worker agent on a detailed ticket (frontend UI), lead-written for the DB matching
 (`portal-data`'s new `scan_match` action — correctness- and tenant-isolation-critical, kept
 undelegated per CLAUDE.md §2). Reviewed and fixed by hand before commit — see below.
 
@@ -338,9 +338,9 @@ undelegated per CLAUDE.md §2). Reviewed and fixed by hand before commit — see
   camera button on the portal catalogue header. W2.4's exact required phrase — "Products in our
   catalogue with this composition" — is verbatim in the UI; audited the whole component for
   substitution/equivalence language, found none.
-- **Caught and fixed after the aider run**: four `unknown`-vs-`string` type errors on `.id` fields
+- **Caught and fixed after the worker run**: four `unknown`-vs-`string` type errors on `.id` fields
   (the existing catalogue code already casts `p.id as string` at its own navigate call — the new
-  code needed the same cast in four places it was missing; DeepSeek's diff otherwise correctly
+  code needed the same cast in four places it was missing; the worker's diff otherwise correctly
   matched every established convention in the file, including reusing the existing `invokePortal`
   helper rather than reinventing one).
 - **New `product_scan` feature key, DEFAULT_OFF** — same reasoning as `voice_notes`: still being
@@ -434,7 +434,7 @@ called within a configured timeout). Adopted over hand-rolling on that basis. MP
 Capacitor 7, installed in `mobile/` only.
 
 **Built (`26e23ac`)**: `mobile/capacitor.config.ts` wired (bundled-branch only, verified both branches
-resolve correctly); `notifyOtaAppReady()` + `OtaReadySignal` (DeepSeek-built, mirrors
+resolve correctly); `notifyOtaAppReady()` + `OtaReadySignal` (worker-built, mirrors
 `NotificationDeepLinkHandler`, confirmed a real no-op on web); `mobile-ota-check` edge function
 (lead-written — the one endpoint with no user JWT by design, since an OTA check must survive an
 auth bug in the current bundle); `company_apps` gets `ota_bundle_key`/`ota_bundle_version`/
@@ -520,15 +520,10 @@ touch disjoint surfaces and can overlap once W1's endpoint is deployed.
 worker repo) · Approach (numbered, naming the existing pattern to copy) · Constraints (the §5 rules
 relevant to *this* ticket) · Acceptance.
 
-**Invocation:**
-```bash
-cd "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Drive/Claude/Pharma BMT/leadenthrella" && aider --yes-always --no-auto-commits --no-suggest-shell-commands --read .claude/skills/cerebyl-context/SKILL.md --read .claude/TICKET-PREAMBLE.md --file <edit> --read <reference> --message-file <ticket>
-```
-
 **Every ticket says:** "do not commit" · "do not claim to have run tsc or the tests — you cannot".
 
-**After every aider run [L]:** `git status` the **entire** tree, not just the `--file` list — that
-list is not a boundary DeepSeek respects, and this is the check that caught the concurrent-session
+**After every worker run [L]:** `git status` the **entire** tree, not just the `--file` list — that
+list is not a boundary the worker respects, and this is the check that caught the concurrent-session
 files on 12 Aug.
 
 **Review the diff hunting for DELETIONS.** This worker has a proven habit of removing shipped

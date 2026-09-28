@@ -11,7 +11,7 @@ WHAT — 24 features, 6 phases). This file is the *delta* — it does not restat
 
 **The 24-feature Cerebyl market-launch programme** (`CEREBYL-BUILD-SPEC.md`, planned in
 `CEREBYL-BUILD-PLAN.md` on 10 Aug). Three parallel lanes — rep app (A), distributor portal (B),
-infra/AI/mobile (C) — executed as ~90 DeepSeek tickets with the lead reviewing every diff.
+infra/AI/mobile (C) — executed as ~90 worker tickets with the lead reviewing every diff.
 
 **Where it stopped, precisely.** The last non-WhatsApp commit in `leadenthrella` is
 `409366c — F1 prelude: wire the B0.9 CEREBYL_BUNDLED bundling step into the real build pipeline`
@@ -88,7 +88,7 @@ real F2/F15 data exists. Not work for now — listed so it isn't rediscovered as
 - **C-lane ticket:** `/voice-note` endpoint on `acrowell-ai-worker` — audio in, transcript +
   structured fields out (`call_summary`, follow-up date, `product_interest`, territory, objections).
   Audio discarded after transcription. Maps onto **existing** lead columns — no migration.
-- **Prompt work is the lead's**, per `CLAUDE.md` §2. DeepSeek does the routing/plumbing only.
+- **Prompt work is the lead's**, per `CLAUDE.md` §2. The worker does the routing/plumbing only.
 - **Ship gate is human:** a real Hindi/Punjabi/English code-switched test with actual reps. A
   clean-English demo proves nothing — the spec says so explicitly. Until that passes, keep the UI
   behind a default-off feature key.
@@ -156,8 +156,8 @@ worker-side pieces.
 - **Two Claude sessions can edit this Drive folder at once.** A file appearing mid-session that
   nothing in `WORKLOG.md` explains may be a sibling session's live work — **check `git log` for very
   recent commits and ask before deleting anything unexplained.** This cost a real deletion.
-- `git status`/`find` the **entire** working tree after every aider run — the `--file` list is not a
-  boundary DeepSeek respects.
+- `git status`/`find` the **entire** working tree after every worker run — the `--file` list is not a
+  boundary the worker respects.
 - Portal tickets: **never** read business data via direct PostgREST from a distributor session. Party
   users have no `profiles` row, so `current_company_id()` is NULL and RLS returns zero rows silently.
   Everything goes through the `portal-*` edge functions. This invariant needed defending twice in one

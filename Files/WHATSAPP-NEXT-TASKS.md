@@ -1,3 +1,32 @@
+# WhatsApp — next tasks ✅ ALL FIVE SHIPPED (superseded 29 Aug 2026)
+
+> **⚠️ DO NOT REBUILD FROM THIS FILE.** Every task below (1–5) was implemented in commit
+> `8c688e0` (15 Aug 2026), refined in `d0ff2f6` (17 Aug) and `e34d0e8` (18 Aug), and is
+> **applied + deployed live**. Verified 29 Aug 2026 against live infrastructure, not the repo:
+>
+> - **Task 1 (opt-out):** `whatsapp_opt_outs` exists on the live DB (PostgREST returns `42501`
+>   permission-denied, i.e. the table is there; a control name returns `PGRST205`). The broadcast
+>   function filters on it at `whatsapp-send-broadcast/index.ts:206`.
+> - **Task 2 (batching/resumability):** bounded-concurrency chunks (`:295`), per-recipient rows
+>   written inside the loop (`:326,336,347`), and already-sent recipients skipped per
+>   `campaign_id` (`:224`).
+> - **Task 3 (template variables):** `buildTemplateComponents` + `normalizeTemplateLanguage`
+>   (`:285,297,303-306`).
+> - **Task 4 (Graph version):** all seven send-path sites are on `v25.0`. Zero `v21.0` remain
+>   outside a historical comment.
+> - **Task 5:** the hardcoded "v21.0" string is gone from the health panel;
+>   `META_GRAPH_VERSION` is the shared constant (`src/lib/whatsapp-broadcast.ts:11`).
+> - **Deployed, not merely committed:** all four WhatsApp edge functions boot and reach their
+>   auth check (`HTTP 401 {"error":"Not authenticated"}`). The duplicate-`const` 503 is gone.
+>
+> The manual-reply `Authentication Error` noted in older memory is also **resolved** — root cause
+> was a truncated `WHATSAPP_PLATFORM_TOKEN` secret (209 chars vs the correct 294); Harish re-set
+> it. See `WORKLOG.md` around the 17 Aug entry.
+>
+> **Meta app `CerebylWA` went LIVE on 29 Aug 2026.** Kept for history only.
+
+---
+
 # WhatsApp — next tasks (handoff for Gemini 3.7 Flash / Antigravity)
 
 **Written:** 15 Aug 2026 · Claude (lead) · point your coding agent at THIS FILE to start.
