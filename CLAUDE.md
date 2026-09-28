@@ -2,7 +2,7 @@
 
 **Single source of truth for this project.** Consolidated 25 Jul 2026 from the former `KIMI-START-HERE.md`, `KIMI-MODEL-POLICY.md`, and the old backup folder's `CLAUDE.md` — all three are now merged here and deleted. If any older doc, memory, or note contradicts this file, **this file wins.**
 
-**The lead role on this project alternates between two agents — Kimi K3 (Kimi Code CLI) and Claude Opus (Claude Code) — whichever Harish has running in the terminal is the boss for that session.** Harish talks only to the lead. The lead plans, decides, reviews, and ships. The lead does not write most of the code itself — the worker for that is **DeepSeek V4 Flash, driven through the aider CLI**, invoked through the Bash tool. Both leads follow this file identically, and both record their major work in the shared log (`Files/WORKLOG.md`, see §1a) so the other lead picks up with full context.
+**The lead role on this project alternates between two agents — Kimi K3 (Kimi Code CLI) and Claude Opus (Claude Code) — whichever Harish has running in the terminal is the boss for that session.** Harish talks only to the lead. The lead plans, decides, builds, reviews, and ships — **there is no external coding worker; the lead writes the code itself.** Both leads follow this file identically, and both record their major work in the shared log (`Files/WORKLOG.md`, see §1a) so the other lead picks up with full context.
 
 ---
 
@@ -31,108 +31,27 @@ git -C "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Dr
 ## 1. How the team works
 
 - **Harish is not a coder.** He tells you what he wants in plain language. You figure out *how*, then get it built.
-- **You — the lead agent (Kimi K3 or Claude Opus, alternating per session) — are the brain.** Architecture, planning, file-level decisions, code review, infra/DB operations, debugging — yours. You read the repo directly whenever you need ground truth. Everything in this file addressed to "you" applies equally to both leads.
-- **DeepSeek V4 Flash is the worker — for BOTH leads.** You delegate implementation tickets to it via the aider CLI (see §2). It executes, verifies, and reports back. You review its `git diff` before declaring anything done. **Almost all coding goes to DeepSeek** — it is nearly as capable as the lead models at a fraction of the cost, and usage quota is the team's scarcest resource. Lead-agent tokens are for thinking, not typing.
-- **What you build directly vs. delegate:** you handle infrastructure, migrations, edge functions, Cloudflare/Supabase CLI operations, and tricky debugging yourself. You delegate bulk feature work, UI, CRUD, and mechanical changes to DeepSeek via aider.
+- **You — the lead agent (Kimi K3 or Claude Opus, alternating per session) — are the brain and the hands.** Architecture, planning, implementation, code review, infra/DB operations, debugging — all yours. You read the repo directly whenever you need ground truth. Everything in this file addressed to "you" applies equally to both leads.
+- **No outside coding model or worker CLI is used for any part of this project** (Harish, 15 Sep 2026). Do not delegate implementation to a third-party model, and do not reintroduce one. If any older doc, ticket or log suggests otherwise, it is stale.
+- **You build everything directly** — features, UI, CRUD, infrastructure, migrations, edge functions, Cloudflare/Supabase CLI operations, and debugging.
 - **Pushing to GitHub now works from this machine** (verified 25 Jul 2026 — credentials are in the macOS keychain via `credential.helper=osxkeychain`). The old "Device not configured / ask Harish to push" rule is **dead**; any doc or memory still saying otherwise is stale. See §2b for when you may push on your own.
-- **Always verify before declaring done.** Never claim success you didn't check: type-check/build output, `git status`, `git diff`. If the worker claims something, spot-check the diff yourself.
+- **Always verify before declaring done.** Never claim success you didn't check: type-check/build output, `git status`, `git diff`.
 
 ## 1a. Shared work log — `Files/WORKLOG.md` (BOTH leads, mandatory)
 
 Because the lead role alternates between Kimi K3 and Claude Opus, each lead **must** keep the other up to date through `Files/WORKLOG.md`:
 
 - **At session start:** read the last few entries of `Files/WORKLOG.md` before planning — the other lead may have shipped something that changes your assumptions.
-- **After every major task** (a shipped deploy, a completed ticket series, an infra/DB change, a design-system decision, a new convention): append a dated entry — what was done, commit hash(es), deploy verdict, files/areas touched, and anything the next lead must know (quirks, follow-ups, user preferences stated mid-session).
+- **After every major task** (a shipped deploy, a completed series of changes, an infra/DB change, a design-system decision, a new convention): append a dated entry — what was done, commit hash(es), deploy verdict, files/areas touched, and anything the next lead must know (quirks, follow-ups, user preferences stated mid-session).
 - **Keep entries dense** — 5–15 lines each, newest at the top. No blow-by-blow; only what a fresh lead needs to continue safely.
 - Small fixes (typos, one-line tweaks) don't need entries. When in doubt, log it.
 
-## 2. Invoking the worker (DeepSeek V4 Flash via aider)
+## 2. How the lead works — quality and token discipline
 
-aider at `~/.local/bin/aider`, configured in `~/.aider.conf.yml` with `model: deepseek/deepseek-v4-flash` (auth via `DEEPSEEK_API_KEY` in the environment). Run non-interactively from the repo root (`leadenthrella/` unless stated):
+**Harish's standing goal: minimum token spend with zero quality loss.** The waste is almost never the
+implementation itself — it is *reconnaissance*, *re-verification*, and *retried shell commands*.
 
-```bash
-cd "$HOME/Library/CloudStorage/GoogleDrive-harishsharmajvsj3@gmail.com/My Drive/Claude/Pharma BMT/leadenthrella" && \
-aider --yes-always --no-auto-commits --no-suggest-shell-commands \
-  --file <files to edit> --read <reference files> \
-  --message-file /path/to/ticket.md
-```
-
-- **`--no-auto-commits` is mandatory.** Aider auto-commits by default; Harish's rule is no git mutations without explicit approval. The worker leaves changes uncommitted so you can `git diff` them.
-- **Pass long tickets via `--message-file`**, not a giant inline string. Write the ticket to a scratchpad file first — readable, re-runnable.
-- **`--file` everything it must edit, `--read` everything it only needs to see** (reference tsx, tokens css, design docs). Aider's repo-map covers the rest; don't stuff the prompt.
-- **Every call is a fresh, stateless session.** Each ticket must be fully self-contained: goal, exact files to touch, relevant conventions, acceptance criteria + the verification command you expect it to run (`npx tsc --noEmit`).
-- Working directory matters: cwd = the repo, so its file access and git land in the right place.
-
-### Cost & caching policy (HARD RULES)
-
-- **DeepSeek V4 Flash is the default for ~all coding tickets** — near-Kimi quality at a small fraction of the cost. Harish is on a usage shortage; the whole point of the stack is max output per rupee. Do not escalate to pricier models unless a ticket has demonstrably failed on DeepSeek twice.
-- **Context caching is automatic** — DeepSeek's server-side disk caching is on by default for all users, no flags or code changes; cache-hit input tokens are ~90% cheaper ([DeepSeek docs](https://api-docs.deepseek.com/news/news0802/)). Nothing to configure — but you maximize hits by keeping **stable prompt prefixes**: reuse the same ticket preamble/conventions block verbatim across tickets, put the changing delta at the end. (Aider's `--cache-prompts` flag is Anthropic-only — irrelevant here.)
-- **Batch related work into one ticket** rather than several small runs; each aider invocation is a fresh session that re-sends context.
-
-### Token efficiency — standing order for both of us
-
-Read narrowly (use the §6 file map, no blind grepping) · don't re-derive context that's already in this file · one clean pass instead of many small ones · batch mechanical changes · verify once (type-check + diff) and report concisely.
-
-**Your own budget (lead agent — Kimi or Claude):** think at low/medium effort matched to the task — low for routine tickets/reviews, medium for planning and debugging. Review via `git diff` rather than reopening files the worker already reported on. Your subscription quota is the scarcest resource on the team.
-
-### The 95/5 split — Harish's standing instruction (10 Aug 2026)
-
-**"I only want your involvement in 5% of the work, which is only and only planning. Everything else
-should be done through DeepSeek."** That is the rule. The lead's 5% is: planning, ticket authoring,
-diff review, migrations, deploys, and live verification. The worker's 95% is all implementation.
-
-**What the lead still never delegates** (this is the quality floor, and the 95% target does not
-override it — it is *inside* the 5%): reviewing the worker's diff · architecture and schema/RLS
-design · AI prompt changes · applying migrations · live-infra debugging · **running the verification
-gates and the mutation check.**
-
-**Verified over ~12 tickets on 10 Aug 2026: DeepSeek's engineering substance is reliable; its
-self-verification is not.** It got the GST back-out from an inclusive MRP, a three-stage comparator,
-three sets of RLS policies, and hold semantics right first time. Every repeated defect was in
-checking its own work. **Budget one correction round-trip per UI ticket and never commit without
-running the mutation yourself.** Escalate a single ticket to a stronger model only when (a) it has
-failed twice on DeepSeek, (b) the design cannot be fully specified in the ticket up front, or
-(c) a wrong answer would pass every gate undetected.
-
-### Harness rules for aider + DeepSeek — each of these cost a wasted run
-
-1. **Keep every `--file` / `--read` path INSIDE `leadenthrella/`.** Passing a path from `Files/` makes
-   aider bind to the PARENT git repo; its repo-map then holds 235 non-source files and it can only
-   see what you explicitly passed. The reusable preamble therefore lives at
-   `leadenthrella/.claude/TICKET-PREAMBLE.md`.
-2. **Never ask DeepSeek for `path:line` evidence.** It never sees line numbers; it will burn an entire
-   run trying to count them and then write nothing. Ask for a verbatim code quote + path.
-3. **Aider cannot edit a zero-byte file** — seed any new report/target file with a placeholder line.
-4. **`--no-suggest-shell-commands` means the worker CANNOT run `tsc` or the tests.** Its
-   "verification" is therefore speculation. Say so in the ticket ("do not claim to have run them")
-   and run the gates yourself. This inverts §2's "never re-run a verification the worker already
-   ran" — with this flag, there is no verification to re-run.
-5. **Tickets must say "do not commit."** Parallel agents share one checkout, so a commit from one
-   sweeps up another's work. The lead commits after review.
-6. **Keep migration tickets SMALL.** Aider's edit format degrades on long SQL files — it hit its
-   3-reflection limit twice on a 100-line migration and silently corrupted an `ON CONFLICT`
-   predicate.
-7. **Mutation-test every new test before committing.** Two suites this session passed while the
-   behaviour under test was deleted, because the fixtures happened to agree with a fallback rule.
-   For a comparator with fallback stages, a test for stage N must be built so every *later* stage
-   gives the wrong answer.
-
-Runner script pattern (the API key lives in `~/.zshrc`, interactive-only, so a bash shell will not
-see it — extract it rather than sourcing zsh):
-```bash
-KEY=$(sed -n 's/^export DEEPSEEK_API_KEY=//p' ~/.zshrc | head -1 | tr -d "\"'")
-```
-
-### Ticket pattern that works
-
-1. **Recon with the script, not by reading files** (see below).
-2. Write the ticket: goal → exact files → step-by-step approach → constraints (§5 standing rules) → verification (`npx tsc --noEmit` error count, `npm run build`) → "commit locally, do not push".
-3. Run it, read the output, then **review the actual diff** before accepting.
-4. For big features, split into multiple tickets and review between them rather than one giant run.
-
-### 🔻 TOKEN DISCIPLINE — the orchestrator's own spend is the scarcest resource
-
-Harish's standing goal: **cut orchestrator token usage to the minimum with zero quality loss**, by pushing everything mechanical onto DeepSeek V4 Flash (via aider). The waste is never implementation (the worker does that) — it is *reconnaissance*, *re-verification*, and *retried shell commands*. Rules:
+### Token discipline
 
 **1. Never open a file just to find line numbers. Use the recon script.**
 ```bash
@@ -140,7 +59,7 @@ Harish's standing goal: **cut orchestrator token usage to the minimum with zero 
 ```
 Returns definitions, capped references with `path:line`, containing files with line counts, plus branch/HEAD/baseline — ~25 lines instead of several hundred. Open an actual file **only** when you need to copy a code idiom, and then read a narrow `offset`/`limit` window, never the whole file.
 
-**2. Never re-run a verification the worker already ran.** If DeepSeek reports `tsc = 0` and `build OK`, that is the result — it ran the same command on the same machine. Re-running it costs a full round-trip to learn a number you already have. **Review the `git diff` instead** — that is where real defects hide, and it is the one review step that must never be skipped.
+**2. Run each verification once.** Typecheck, tests and build are the gates — run them once after the change is complete, not after every edit, and don't re-run one whose result you already have.
 
 **3. Ship with one command, not six.**
 ```bash
@@ -149,24 +68,33 @@ Returns definitions, capped references with `path:line`, containing files with l
 ```
 It hardcodes `--name leadenthrella`, fails closed if typecheck exceeds baseline, and uses `grep -a` for the propagation check. Do not hand-roll the deploy ritual again; every manual attempt has cost retries.
 
-**4. Let the ticket lean on shared context, not on restated context.** `.claude/skills/cerebyl-context/SKILL.md` carries the brand rules, standing product rules, file map, and verification contract — attach it to aider runs with `--read .claude/skills/cerebyl-context/SKILL.md` instead of re-explaining the project in every ticket. Tickets should state the *delta* — goal, files, approach, acceptance. Long tickets go in a scratchpad file and get passed as `--message-file …`.
+**4. Lean on shared context.** `.claude/skills/cerebyl-context/SKILL.md` carries the brand rules, standing product rules, file map, and verification contract — read it instead of re-deriving the project.
 
 **4b. Vendored UI/motion skills (added 28 Jul 2026).** `.claude/skills/` also carries six third-party reference skills — `motion-principles`, `mobile-principles`, `framer-motion`, `css-native`, `design-audit`, `design-dna` — copied in from `AThevon/genjutsu` and `zanwei/design-dna` at pinned commits. **Vendored on purpose, never plugin-installed**, so upstream can't silently change what our agents are told. Provenance, the security audit, and the exclusion list live in `.claude/skills/VENDORED.md` — **read it before adding any more.** Two exclusions matter: `genjutsu/paint` and `genjutsu/cast` are barred because `paint` is instructed to *replace existing design tokens*, which would overwrite the locked Cerebyl brand and the shipped F8 UI. Also note `LeonxInx/taste-skill`, cited in circulating "best Claude skills" listicles, **does not exist** — verify any such repo before trusting the list it came from.
 
-**5. Batch related work into one ticket** rather than several small runs; each aider invocation is a fresh stateless session that re-sends context (a stable ticket preamble keeps DeepSeek's automatic disk cache hitting — see §2).
+**5. Batch related changes into one clean pass** rather than many small ones. Read narrowly (use the §6 file map, no blind grepping) and report concisely.
 
-**6. Delegate recon itself when an area is unfamiliar.** A ticket can be pure investigation: *"Report how X works: exact files, line numbers, data flow, and the 3 functions that matter. Change nothing."* Reading the worker's 30-line summary beats reading 800 lines yourself.
+**Your own budget:** think at low/medium effort matched to the task — low for routine changes, medium for planning and debugging. Your subscription quota is the scarcest resource on the team.
 
-**🚧 NEVER delegate these — this is the quality floor, and the 50% target does not override it:**
-- **Reviewing the worker's diff.** Always read it yourself. Accepting an unreviewed diff is how quality silently drops.
-- **Architecture and design decisions** — what to build, which approach, what trade-off.
-- **AI prompt changes** (`prompt.ts` / `prompt-tier2.ts`) — they force a cache re-verification and a `thoughtSignature` mistake 400s the whole assistant.
-- **DB migrations, RLS, and anything touching live data.**
-- **Live-infra debugging** (Cloudflare/Supabase/KV state) and any judgement about whether something is *actually* fixed.
+### Quality floor — never skip these
 
-Shorthand: **DeepSeek finds and types; the lead (Kimi or Claude) decides and reviews.**
-
----
+- **Read your own full `git diff` before committing** — and read it for what was *removed* first
+  (dropped helper calls, flattened conditional branches, deleted props/columns). A restyle that
+  silently deletes a shipped feature compiles, passes tests and renders fine; only the diff shows it.
+- **Never invent a data hook, table, component or statistic that does not already exist.** Every
+  number on screen must come from real data.
+- **Mutation-test every new test before committing.** Suites in this repo have passed while the
+  behaviour under test was deleted, because fixtures happened to agree with a fallback rule. Break
+  the code on purpose, confirm the test fails, restore. For a comparator with fallback stages, a test
+  for stage N must be built so every *later* stage gives the wrong answer.
+- **Keep migrations small**, one concern per file — long SQL edits are where silent corruption (a
+  broken `ON CONFLICT` predicate) has crept in before.
+- **AI prompt changes** (`prompt.ts` / `prompt-tier2.ts`) force a cache re-verification (see §8), and a
+  `thoughtSignature` mistake 400s the whole assistant — treat them with extra care.
+- **Parallel sessions share one checkout.** Stage only the files you changed (never `git add -A`), and
+  `git status` the whole tree before committing so you don't sweep up another session's work.
+- **Live-infra judgement** — whether something is *actually* fixed — comes from loading the live
+  URL / probing the DB, never from a green build (see §8g).
 
 ## 2b. Push policy — the green-light checklist (set 25 Jul 2026)
 
@@ -176,7 +104,7 @@ Harish: *"when you are confident and sure 100% that everything went right in the
 
 1. `./scripts/ship.sh --dry-run` (or a full `ship.sh`) passed — typecheck **at or below** baseline and `npm run build` succeeded.
 2. `git status --short` is **empty** — nothing uncommitted or untracked that belongs with the change.
-3. You have read the **full `git diff` of every commit being pushed** with your own eyes. A worker's summary is not a substitute.
+3. You have read the **full `git diff` of every commit being pushed** with your own eyes. A summary is not a substitute.
 4. Every changed file is one you intended to change. No strays, no surprise files.
 5. Relevant existing tests pass (e.g. `npx vitest run` in `acrowell-ai-worker`).
 6. If the change touches the Worker, a prompt, or the DB: the matching artifact is **deployed AND verified live** — an asset-hash/propagation check or a PostgREST probe, not merely "the deploy command exited 0".
@@ -188,7 +116,7 @@ Harish: *"when you are confident and sure 100% that everything went right in the
 - **Secrets, keys, tokens, or env/binding changes.**
 - A change to the **typecheck baseline** itself (raising or lowering).
 - **Deletions or refactors too large to have genuinely reviewed** hunk by hunk.
-- Any step that was **skipped, blocked, or ambiguous** — including a worker run whose output you never actually saw. (This happened 25 Jul: Kimi's background output file was empty, so its verification numbers were unread. That is an automatic red, and the fix is to re-run the checks yourself, not to assume.)
+- Any step that was **skipped, blocked, or ambiguous** — including a background run whose output you never actually saw. (This happened 25 Jul: a background output file was empty, so its verification numbers were unread. That is an automatic red, and the fix is to re-run the checks yourself, not to assume.)
 - **Force-push, history rewriting, branch deletion, or pushing anything but `main` fast-forward.** Never, under any circumstances.
 - Anything you are *inferring* rather than *checking*.
 
@@ -212,6 +140,7 @@ If even one item is uncertain, the correct move is the cheap one: commit locally
 | **Live site** | `https://app.cerebyl.com` (Cloudflare Custom Domain on the Worker) |
 | **Actual deploy target** | Cloudflare Worker **`leadenthrella`** (`https://leadenthrella.icy-sunset-05b0.workers.dev`) |
 | **Domain/DNS/host** | Cloudflare all-in-one, account `admin@enthrella.com` |
+| **enthrella.com registrar** | **Hostinger** (moved from Wix 21 Sep 2026, expires 21 Aug 2027). It lapsed Aug–Sep 2026 with no MX, so `admin@enthrella.com` (Cloudflare login + `support@cerebyl.com` forward target) received nothing. Never let it lapse again — keep auto-renew on. Mail is **Google Workspace**: DNS stays on Hostinger (not Cloudflare — Cloudflare Email Routing would replace the Google MX); MX `smtp.google.com`, Google SPF, DKIM (`google._domainkey`, 2048-bit, authenticating) and DMARC `p=none` reporting to admin@ — all live 21 Sep 2026. Workspace = Business Starter, billed by Google directly. **admin@enthrella.com is the single super-admin and signs into Cloudflare, Resend, Razorpay and Google Cloud via Google** — 2-step verification, recovery phone and backup codes set up by Harish 21 Sep 2026. Hostinger auto-renew is deliberately OFF (Harish's call) — renew by hand before 21 Aug 2027. GSTIN not yet on Workspace billing (application pending). Next hardening step: DMARC to `p=quarantine` once a couple of weeks of reports are clean. **Website (21 Sep 2026):** `https://www.enthrella.com` = Cloudflare Pages project `enthrella-online` (custom domain, Google-issued cert) via Hostinger CNAME `www → enthrella-online.pages.dev`. The bare `enthrella.com` uses a Hostinger 301 redirect → `enthrella-online.pages.dev`, and a script in the page forwards pages.dev → `www.enthrella.com` (Hostinger refuses a redirect from the domain to its own `www`; Pages can only serve an apex whose DNS is on Cloudflare). Hostinger free SSL for the apex was installing 21 Sep. No Hostinger hosting is bought — Pages hosts the site free. Source: `Claude/Enthrella Website/site/index.html`; deploy with `wrangler pages deploy site --project-name enthrella-online --branch main`. Brand: red #F30000 / black / white, "e" mark from the brand PDF, Anton display type. Never show the Udyam number or home address on it. |
 | **Backend** | Supabase project `pharma-bms-prod`, ref `cjowrlrjyhdltbyqwozr`, ap-south-1 (Mumbai), free plan |
 | **Stack** | React 19 + TypeScript, TanStack Start/Router (file-based routes), TanStack Query, Supabase (Postgres + RLS + Storage + Edge Functions), Tailwind v4 + shadcn/ui, framer-motion |
 | **Ignore** | `leadenthrella-main/` is a stale duplicate — never use it |
@@ -235,7 +164,9 @@ If even one item is uncertain, the correct move is the cheap one: commit locally
 
 ### Sibling projects — outside the repo, easy to forget, will silently break
 
-**AI assistant ("Ceremate") Worker:** `<root>/acrowell-ai-worker` — Cloudflare Worker at `https://acrowell-ai-worker.icy-sunset-05b0.workers.dev`. **Not a git repo, not inside `leadenthrella`.** Deploy with `npx wrangler deploy` from that folder. Its `wrangler.jsonc` carries `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` / `ALLOWED_ORIGINS` — **anything changing the app's domain or Supabase project must be mirrored here or the assistant breaks silently.** Model: `gemini-3.1-flash-lite`. CORS allows `.icy-sunset-05b0.workers.dev` + `cerebyl.com`/`.cerebyl.com`, **not** client white-label domains yet. Living spec: `Files/ai-assistant-build-spec.md` — read its build-status block first.
+**AI assistant ("Ceremate") Worker:** `<root>/acrowell-ai-worker` — Cloudflare Worker at `https://acrowell-ai-worker.icy-sunset-05b0.workers.dev`. **Not inside `leadenthrella`; its own private GitHub repo since 27 Sep 2026: `harishsharmanash/ceremate-worker`** (local folder name unchanged). `git pull` before editing on the Mac — cloud sessions push there too. Deploy with `npx wrangler deploy` from that folder. Its `wrangler.jsonc` carries `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` / `ALLOWED_ORIGINS` — **anything changing the app's domain or Supabase project must be mirrored here or the assistant breaks silently.** Model: `gemini-3.1-flash-lite`. CORS allows `.icy-sunset-05b0.workers.dev` + `cerebyl.com`/`.cerebyl.com`, **not** client white-label domains yet. Living spec: `Files/ai-assistant-build-spec.md` — read its build-status block first.
+
+**WhatsApp Worker:** `<root>/cerebyl-whatsapp-worker` — Meta webhook + the WhatsApp bot (`src/bot.ts`). **Private GitHub repo since 27 Sep 2026: `harishsharmanash/cerebyl-whatsapp-worker`** — `git pull` before editing on the Mac. Deploy with `npx wrangler deploy` from that folder. Bot styles (form / smart / sales) + the per-chat message limit live in `src/bot-mode.ts`; the final allowed reply's close is enforced in code (`finalizeLastReply`), never trusted to the AI.
 
 **Lead intake Worker:** `<root>/cerebyl-lead-intake` — Cloudflare **Email** Worker behind F2, receives catch-all `*@leads.cerebyl.com`. Also not a git repo. Has its own service-role key; keep isolated from the AI worker.
 
@@ -248,9 +179,9 @@ If even one item is uncertain, the correct move is the cheap one: commit locally
   - **Documented exception — the LEADS list defaults to newest-received-first** (Harish, 10 Aug 2026, and the build spec's F18). Sort key is **`date_received`**, not `created_at`: leads arrive via the email-intake worker and are bulk-imported, so row-insert time is not arrival time. `useLeads()` already fetches in that order. Do not "fix" the leads list to alphabetical.
 - **Reassigning a party's rep = managers/admins only.** Reps never see that control.
 - **Reps only ever see their own data** (enforced by RLS).
-- Include these constraints in worker tickets whenever the ticket touches related code.
+- Keep these constraints in mind whenever a change touches related code.
 
-## 6. File map (so neither you nor the worker greps blind)
+## 6. File map (so you never grep blind)
 
 Routes: `src/routes/` (TanStack file-based; each domain has a list route + often a `$id.tsx` detail route). Hooks: `src/lib/use-*.ts`. Migrations: `supabase/migrations/`.
 
@@ -607,6 +538,80 @@ never SF Pro · Lucide never SF Symbols (both Apple-platform-licensed only) · h
 **Known duplication to fix:** `LogCallDialog` now exists in both `leads.all.tsx` and
 `leads.$id.tsx`. Behaviour is identical today; extract it. This repo has been bitten
 by exactly this twice (`/team` vs `/users`, and `generate_due_notifications_all`).
+
+## 8i. SECURITY BASELINE — audit + full remediation (17–24 Aug 2026)
+
+A ten-pass audit (six conventional review, four adversarial red-team) followed by complete
+remediation. **23 findings fixed, 1 declined with a stated reason, 1 false positive corrected,
+3 left open as decisions.** All migrations applied and verified in `pg_policies`; edge
+functions, both Workers, and the frontend deployed. **Do not re-audit this ground without new
+evidence — and do not "simplify" any of the policies below.**
+
+### What was actually broken (so nobody reintroduces it)
+
+- **A working cross-tenant exfiltration chain.** `backup-run` put its role check *inside*
+  `if (body.manual)` and left the `else` branch unauthenticated; `backup-oauth-callback`
+  trusted an unsigned `state` param as `company_id`. Together: any authenticated user could
+  point a victim company's full database export at their own Google Drive and fire it on
+  demand. `state` is now a 256-bit single-use nonce the callback *looks up*; auth in
+  `backup-run` happens above the branch.
+- **The financial core was never rep-scoped.** `orders`, `payments`, `order_items`,
+  `purchases`, `purchase_items`, `stock_batches`, `stock_movements`, `stock_locations` and the
+  four party child tables were all bare `company_id = current_company_id()`. §5's "reps only
+  see their own data" was true only of leads and parties. Now enforced everywhere.
+- **`order_items` was an invoice-forgery path** — no ownership check while its parent `orders`
+  had one, and line-item writes rewrite `orders.total` via a trigger.
+- **`whatsapp-send-broadcast` was returning 503 in production** (duplicate `const` in one
+  scope = parse error). Broadcasts had been entirely non-functional, not merely flawed.
+- **`seed-demo` was anonymously reachable** and handed out admin credentials — the anon key is
+  a valid JWT. Deleted.
+
+### The nine rules this produced — apply them to all new work
+
+1. **Every path through a handler must reach the same auth check.** The recurring defect was
+   an authorization *branch*, not a trusted parameter. Ask "does EVERY branch reach the
+   check?", not "does this trust the body?"
+2. **`verify_jwt = true` is not authorization.** The public anon key is a valid JWT and ships
+   in the client bundle.
+3. **Tenant ids come from the caller's own row**, never the request body. Identical 403 for
+   "not found" and "other company" so ids cannot be probed.
+4. **A policy needs the tenant clause AND the owner clause.** For anything hanging off a
+   party use the shared `public.can_see_party(party_id)` — never re-implement it inline, which
+   is exactly how `order_items` drifted from `orders`.
+5. **`WITH CHECK` must pin `company_id` on every UPDATE/INSERT policy**, or a user can
+   relocate their own row into another tenant.
+6. **Find the LATEST definition before editing.** `grep` returns the oldest migration first;
+   patching it changes nothing. (Cost a wasted edit on the follow-up generator this session.)
+7. **Re-assert grants after `CREATE OR REPLACE`, and make grant migrations sort AFTER the
+   definition** they grant on — the `purge_activity_log` retention silently never ran for
+   months because of exactly this.
+8. **Enumerate deployed artifacts, not just the repo.** A live check found a storage bucket
+   (`database_export_20_07_26`) present in no migration and no code — empty and unreachable,
+   but invisible to any code review. Same class of miss as the AI Worker left on dead infra.
+9. **Mutation-test every new test.** Break the behaviour, confirm the test goes red.
+
+### Now genuinely proven (verified against the live DB, not inferred)
+
+Zero views and zero materialized views in `public` · 97 tables created, 97 RLS-enabled · 67
+SECURITY DEFINER functions, all 67 with `SET search_path` · `current_company_id()` fails
+closed (all 296 policies checked for `COALESCE` / `IS NOT DISTINCT FROM` fail-open shapes) ·
+**no trigger on `auth.users` anywhere**, so the classic signup-metadata privilege escalation
+is structurally impossible · one private storage bucket · 2 realtime-published tables · 2
+anon-callable RPCs · no secrets in the client bundle.
+
+### Still open — decisions, not defects
+
+Lead-intake sender allowlist is built but deliberately empty (populate from real traffic;
+**never allowlist a consumer domain like gmail.com** — anyone can send authenticated mail from
+it) · Ceremate's `role` is client-asserted, harmless until a tool runs server-side on
+`service_role` · WhatsApp signed URLs last 1 year · `prefers-reduced-motion` on 28 of 67
+framer-motion files.
+
+### The regression net
+`npm run test:isolation` — Group F covers everything the RLS work changed, with fixture
+guards that fail loudly rather than passing vacuously on an empty seed company. **Run it after
+any RLS, auth, or edge-function change.** Full record: the audit artifact in this session's
+history.
 
 ## 9. Keep this file current
 
