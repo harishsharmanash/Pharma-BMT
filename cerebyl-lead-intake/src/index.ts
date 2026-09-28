@@ -12,12 +12,15 @@
 //   8. INSERT a lead_intake_log row (raw_excerpt capped ~4KB)
 //   9. forward the original email to the company's real inbox
 
+import * as Sentry from "@sentry/cloudflare";
 import { classify } from "./classify";
 import { resolveCompany, slugFromTo } from "./company";
 import { findDuplicate, normalizePhone } from "./dedupe";
+import { isKillSwitchOn } from "./kill-switch";
 import { parseLead, rawToText } from "./parse";
 import { checkSender, readSenderAuth } from "./sender-auth";
-import { sbInsert, sbRpc, sbUpdate } from "./supabase";
+import { sentryOptions } from "./sentry";
+import { sbGet, sbInsert, sbRpc, sbUpdate } from "./supabase";
 
 const RAW_EXCERPT_MAX = 4096;
 
@@ -120,6 +123,22 @@ async function handle(message: ForwardableEmailMessage, env: Env): Promise<void>
 			await saveLog();
 			return;
 		}
+
+		// Platform kill switch (Cerebyl console → Switchboard). Placed after the company
+		// resolves so the `finally` below still forwards this email to the company's own
+		// inbox, and after raw_excerpt is captured so the lead can be re-imported later.
+		const paused = await isKillSwitchOn("kill_switch_lead_intake", async () => {
+			const rows = await sbGet<{ enabled: boolean }>(env, "platform_flags?key=eq.kill_switch_lead_intake&select=enabled");
+			return rows[0]?.enabled ?? null;
+		});
+		if (paused) {
+			// Attribute the row so the company can see the paused email in its intake log.
+			log.company_id = intake.company_id;
+			log.outcome = "paused";
+			await saveLog();
+			return;
+		}
+
 		log.company_id = intake.company_id;
 
 		// 1b. Sender authenticity. The To: slug is a company name and therefore
@@ -244,14 +263,17 @@ async function updateLog(env: Env, id: string, log: LogRow): Promise<void> {
 	}
 }
 
-export default {
+const handler = {
 	async email(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
 		ctx.waitUntil(
 			handle(message, env).catch((e) => {
 				// Never reject the message — a rejected email bounces back to the
 				// portal and can create a retry loop. Log and swallow instead.
 				console.error("lead intake failed:", e);
+				Sentry.captureException(e);
 			}),
 		);
 	},
 };
+
+export default Sentry.withSentry(() => sentryOptions("lead-intake"), handler);
