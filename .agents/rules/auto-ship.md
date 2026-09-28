@@ -1,8 +1,5 @@
-# Automatic Shipping & Live Deployment Rule
+# Push & deploy rule
 
-Whenever you complete and verify changes to the frontend (`leadenthrella`):
-1. **Commit and Push**: Commit the changes with a concise commit message and push to `origin/main`.
-2. **Automatically Ship to Production**: Run `./scripts/ship.sh` from the `leadenthrella` directory.
-   - Do NOT stop and ask whether to deploy; automatically run `./scripts/ship.sh` after completing each change as requested by the user.
-   - This executes the baseline typecheck gate, builds the project, asserts backend env inlining, deploys to Cloudflare Worker `leadenthrella`, and checks live propagation on `https://app.cerebyl.com/`.
-3. **Verify Live**: Wait for `./scripts/ship.sh` to complete and confirm `SHIPPED ✓ <chunk>` before reporting completion to the user, so the user can immediately test the live application at `https://app.cerebyl.com/`.
+Follow `CLAUDE.md` §2b (the green-light checklist) — see `AGENTS.md` at the project root.
+
+Harish (28 Sep 2026): push and ship automatically only what is verified safe — every §2b green-light line true. Anything on the §2b red list (unapplied migrations, RLS/auth/live data, secrets/env, typecheck baseline, large refactors, anything skipped or ambiguous) needs his OK first. Never force-push. Frontend deploys only via `./scripts/ship.sh` from the main `leadenthrella` checkout, confirmed `SHIPPED ✓` and checked live.
