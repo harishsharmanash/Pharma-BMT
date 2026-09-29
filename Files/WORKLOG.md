@@ -1,3 +1,12 @@
+## 2026-09-29 (late night 2) — Chat-vs-lead audit of 16 Vee chats (Claude Opus)
+- Audited every chat since Sebastian (read-only via Harish's session). Worker `c9677f4` (ver `3fdff39b`), new `src/rule-capture.ts` (`ruleDetails`, `extractPincode`, `placeFromPincode` → India Post api.postalpincode.in, 3 s timeout, fail = nothing):
+  - **Details sent after the bot closes were lost** (Mohdaazam "Drug licence ha bas gst nahi ha", Shivansh "chemist"/"yes"): `captureWhileSilent` runs the rules (no AI, no reply) at every silent gate (handed_off/human, cap exhausted, form non-bot).
+  - **PIN codes**: fill city when empty and ALWAYS set state (AI guessed Punjab for Jammu 181203); city never replaced.
+  - **"Yes" + "Distributor" as two messages** (Sourabh): licence yes/no checked per message.
+  - **Empty duplicate reply** (Shivansh): a timer for a message the running reply already answered sent "Thank you!" and burned the last message. `runScheduledReply` now skips when `hasUnansweredInbound` is false (no inbound since our latest reply began; mid-send arrivals still count).
+  - State known → "Which city or town are you in?"; extraction prompt: town after a firm name is the city ("AL NAWAF PHARMA KUPWARA"); "Jan Aushadhi Kendra" → pharmacy owner.
+- Tests 180, new ones mutation-checked. Existing affected leads NOT corrected (asked Harish). The Controls default opening message ("Sure. / share your name and business type / city + GST") still asks the name — Harish's to change.
+
 ## 2026-09-29 (late night) — Licence question fix (Claude Opus)
 - Sebastian chat: "Yes" to "Do you have a Drug Licence / GST?" wasn't saved, so the bot re-asked. Worker `c7a8e93` (ver `58e25e82`): `licenceFromShortAnswer` + `lastBotReply` map a bare yes/no (haan/ji/nahi…) onto the licence question our newest reply asked (both → "Has DL and GST" / "No DL, no GST"), in form mode and Smart/Sales. Wording is now "Do you have a Drug Licence and GST?" / "Kya aapke paas Drug Licence aur GST hai?" — never "DL / GST"; AI label says the same. All-caps names greet as "Sebastian". App `opener-templates.ts` wording too. Tests worker 170, app 734; new ones mutation-checked. Sebastian's lead itself not back-filled.
 
