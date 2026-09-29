@@ -1,3 +1,9 @@
+## 2026-09-29 — Opening message: "Write with AI" + ready-made templates (Claude Opus)
+- Worker `eecd7a9` + `0a60c7f` (version `2a03abd9`): `src/opener-ai.ts` + route `/division/suggest-opener` (shares suggest-keywords' admin/manager + kill-switch guard). Prompt from the division's types, keywords, ask_for, notes; NO greeting (the ad greeted), acknowledgement + ≤3 details in 2–3 blank-line lines; 3 options (Hinglish, English, Hinglish-alt). `cleanOpeners` drops greeting options, splits single newlines into bubbles, ≤700, ≤3. Usage logged `whatsapp_opener_suggest`.
+- Edge fn `whatsapp-suggest-opener` (proxy, deployed). App `6347626` shipped `BwHGYUD1`: Divisions popup → Opening message → "Write with AI" link + tap-to-use cards; 3 no-AI templates from `src/lib/opener-templates.ts` (follows the Ask chips live; priority firm > profession > city > DL/GST > … > name; DL+GST merged).
+- Live on Vee Vedic (view/generate only, never saved): first AI run packed 6 details → prompt capped at 3 → re-run gave 2-line, ≤3-detail options. Popup reopening clears old AI options.
+- Tests: worker 140, app 726; all new ones mutation-checked.
+
 ## 2026-09-29 — WhatsApp: ad greeting in chat, division opening message, short human-style replies (Claude Opus)
 - Worker `5a4b7d9` + `3647190` (version `e2e19aa5`); app `6090913` shipped `55e8e0f4`. Migration `20261003120000_division_opening_message.sql` (whatsapp_division_profiles.opening_message, ≤700) applied by Harish, probe-verified, types regenerated.
 - **Ad greeting**: Meta's inbound `referral.welcome_message.text` (documented) = the CTWA ad's automatic greeting, which is never delivered as a message. `storeAdGreeting` saves it as an outbound row `message_type='ad_greeting'` (sent_via NULL) just before the lead's first message, once per text; also fed to `tagDivisionIfUnknown`. Chat UI labels it "Ad greeting"; the AI sees it prefixed "(Automatic greeting shown with our ad)".
