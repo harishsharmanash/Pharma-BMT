@@ -1,3 +1,8 @@
+## 2026-09-29 (late) — Copy lead details (Claude Opus)
+- App `495a1cd`, shipped `index-DKs5yqcc.js`, pushed. `src/lib/lead-share.ts` `formatLeadForSharing` → WhatsApp-ready text: `*Lead <code> — <firm|name>*` + only filled rows (Name, Firm, Phone, Location, Profession, Division, Interested in, Products, DL / GST, Status, Source, Assigned to); Name dropped when it equals Firm. 3 tests, mutation-checked; app 729 tests pass.
+- `src/components/leads/copy-lead-button.tsx` (icon + pill variants, stopPropagation, textarea execCommand fallback for WebViews). Placed: lead card before the arrow, peek side panel beside "Open full", lead page pill before "Log a call".
+- Live-verified on Vee (read-only): 25 card buttons, toast shown, copied text correct, side-panel button present. Lead-page pill not clicked live.
+
 ## 2026-09-29 (later) — Lead codes, lost replies, real-name check, reply wait timer (Claude Opus)
 - **Lead codes**: `generate_lead_code` counted `rep_id = NULL` (never true) → every unassigned lead "0-001". Migrations `20261003130000` (max existing number for the prefix in the company + 1) + `20261003130100` (renumber "0-" unassigned leads by created_at) — tested on scratch Postgres (reassignment doesn't reuse numbers), applied by Harish, verified live: Vee 152 leads, 0 duplicates. App `1bd1d18`.
 - **Replies typed between our bubbles were dropped** (Perfect Medical Stores' "Silawad distt barwani mp"): "since our last reply" now starts at the reply's FIRST bubble (`splitCustomerMessages`, bubbles within 8 s = one reply). History now selects created_at.
